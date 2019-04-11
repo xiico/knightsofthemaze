@@ -1,0 +1,97 @@
+//- doctype html
+//- html
+//-   head
+//-     title= title
+//-     link(rel='stylesheet', href='/stylesheets/style.css')
+//-   body
+//-     block content
+
+doctype html
+html
+  head
+    title  
+    meta(http-equiv='content-type', content='text/html; charset=utf-8')
+    meta(name='description', content='')
+    meta(name='keywords', content='')
+    //if lte IE 8
+      script(src='stylesheets/ie/html5shiv.js')
+    script(src='/javascripts/jquery.min.js')
+    script(src='/javascripts/jquery.dropotron.min.js')
+    script(src='/javascripts/jquery.scrollgress.min.js')
+    script(src='/javascripts/jquery.scrolly.min.js')
+    script(src='/javascripts/jquery.slidertron.min.js')
+    script(src='/javascripts/skel.min.js')
+    script(src='/javascripts/skel-layers.min.js')
+    script(src='/javascripts/init.js')
+    noscript
+      link(rel='stylesheet', href='/stylesheets/skel.css')
+      link(rel='stylesheet', href='/stylesheets/style.css')
+      link(rel='stylesheet', href='/stylesheets/style-xlarge.css')
+    //if lte IE 9
+      link(rel='stylesheet', href='/stylesheets/ie/v9.css')
+    //if lte IE 8
+      link(rel='stylesheet', href='/stylesheets/ie/v8.css')
+  body.landing
+    // Header
+    header#header.alt.skel-layers-fixed
+      h1
+        a(href='index.html')
+          | HTML5 Website 
+          span by Html5webtemplates.co.uk
+      nav#nav
+        ul
+          li
+            a(href='index.html') Home
+          li
+            a.icon.fa-angle-down(href='') Layouts
+            ul
+              li
+                a(href='left-sidebar.html') Left Sidebar
+              li
+                a(href='right-sidebar.html') Right Sidebar
+              li
+                a(href='no-sidebar.html') No Sidebar
+              li
+                a(href='') Submenu
+                ul
+                  li
+                    a(href='#') Option 1
+                  li
+                    a(href='#') Option 2
+                  li
+                    a(href='#') Option 3
+                  li
+                    a(href='#') Option 4
+          li
+            a(href='elements.html') Elements
+    block content
+    // Footer
+    footer#footer
+      ul.icons
+        li
+          a.icon.fa-twitter(href='#')
+            span.label Twitter
+        li
+          a.icon.fa-facebook(href='#')
+            span.label Facebook
+        li
+          a.icon.fa-instagram(href='#')
+            span.label Instagram
+        li
+          a.icon.fa-dribbble(href='#')
+            span.label Dribbble
+        li
+          a.icon.fa-envelope(href='#')
+            span.label Envelope
+      ul.menu
+        li
+          a(href='#') FAQ
+        li
+          a(href='#') Terms of Use
+        li
+          a(href='#') Privacy
+        li
+          a(href='#') Contact
+      span.copyright
+        | © Copyright. All rights reserved. Design by 
+        a(href='http://www.html5webtemplates.co.uk') Responsive Web Templates
