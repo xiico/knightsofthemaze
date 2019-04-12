@@ -110,3 +110,8 @@
 		#cta .actions {
 			display: block;
 		}
+
+canvas {
+	width: 320px;
+	height: 180px;
+}			

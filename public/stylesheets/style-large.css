@@ -22,3 +22,9 @@
 		background-attachment: scroll;
 		padding: 10em 0;
 	}
+
+
+	canvas {
+		width: 960px;
+		height: 540px;
+	}

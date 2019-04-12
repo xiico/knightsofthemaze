@@ -133,3 +133,8 @@
 		#footer .icons {
 			margin: 0 0 2em 0;
 		}
+
+canvas {
+	width: 640px;
+	height: 360px;
+}			

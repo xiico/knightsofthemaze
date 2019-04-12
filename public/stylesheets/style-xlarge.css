@@ -15,3 +15,9 @@
 	#banner {
 		padding: 3em 0;
 	}
+
+
+canvas {
+	width: 960px;
+	height: 540px;
+}

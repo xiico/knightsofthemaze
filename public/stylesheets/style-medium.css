@@ -184,3 +184,8 @@
 				display: inline-block;
 				width: 6.25em;
 			}
+
+canvas {
+	width: 640px;
+	height: 360px;
+}			
