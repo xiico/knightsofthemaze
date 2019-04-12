@@ -20,12 +20,12 @@ function main(Z){
 }
 var maze = maze();
 
-function maze(width=31, height=31, complexity=.75, density=.75){ //
+function maze(width=31, height=31, complexity=.75, density=.75) { //
     // Only odd shapes
-    var shape = [parseInt(height / 2) * 2 + 1, parseInt(width / 2) * 2 + 1];
+    var shape  = [parseInt(height / 2) * 2 + 1, parseInt(width / 2) * 2 + 1];
     // Adjust complexity and density relative to maze size
     complexity = parseInt(complexity * (5 * (shape[0] + shape[1]))); // number of components
-    density    = parseInt(density * (parseInt(shape[0] / 2) * parseInt(shape[1] / 2))) // size of components
+    density    = parseInt(density * (parseInt(shape[0] / 2) * parseInt(shape[1] / 2))); // size of components
 
     // Build actual maze
     Z = matrix(shape)
@@ -36,10 +36,10 @@ function maze(width=31, height=31, complexity=.75, density=.75){ //
         Z[y][x] = !!1
         for(let j of new Array(complexity)) {
             neighbours = []
-            if (x > 1)            neighbours.push(new Array(y, x - 2))
-            if (x < shape[1] - 2) neighbours.push(new Array(y, x + 2))
-            if (y > 1)            neighbours.push(new Array(y - 2, x))
-            if (y < shape[0] - 2) neighbours.push(new Array(y + 2, x))
+            if (x > 1)            neighbours.push(new Array(y, x - 2));
+            if (x < shape[1] - 2) neighbours.push(new Array(y, x + 2));
+            if (y > 1)            neighbours.push(new Array(y - 2, x));
+            if (y < shape[0] - 2) neighbours.push(new Array(y + 2, x));
             if (neighbours.length) {
                 var ng = neighbours[rand(0, neighbours.length - 1)];
                 y_ = ng[0], x_ = ng[1];
