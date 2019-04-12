@@ -7,4 +7,11 @@ block content
     ul.actions
       li
         canvas(id="game" width="320" height="180")
-  script(src="/javascripts/game.js")
+        .mobileInput
+          .divControls
+            img#btnMoveLeft
+            img#btnMoveRight
+          .divJump
+            img#btnJump
+  script(src="/javascripts/maze-generator.js")
+  script(src="/javascripts/game.js")  
