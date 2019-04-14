@@ -14,9 +14,17 @@ var iComplexity = 0;
 var iDensity = 0;
 var x = 0;
 var y = 0;
-var colSize = 36;
-var rowSize = 36;
-function main(){
+var colSize = 4;
+var rowSize = 4;
+var roomSize = 5;
+var count = 0;
+var size = 39;
+function main(){    
+    count++;
+    if(count % 30 == 0) {
+        requestAnimationFrame(main);
+        return;
+    }
     if(!useMaze2)
     {
         if(maze.length && !line) {
@@ -38,13 +46,12 @@ function main(){
            }
        }
     }
-
-    requestAnimationFrame(main)
+    requestAnimationFrame(main);
 }
 
 var maze = maze();
 
-function maze(width=31, height=31, complexity=.75, density=.75) {
+function maze(width=size, height=size, complexity=.75, density=.75) {
     // Only odd shapes
     this.shape  = [parseInt(height / 2) * 2 + 1, parseInt(width / 2) * 2 + 1];
     // Adjust complexity and density relative to maze size
@@ -91,7 +98,7 @@ function buildIsles(density, shape, complexity, width, height) {
         }
     }
 
-    createRoom(Z, parseInt(width / 2) - 5 + 1, parseInt(height / 2) - 5 + 1, 9, 9);
+    createRoom(Z, parseInt(width / 2) - parseInt(roomSize / 2) , parseInt(height / 2) - parseInt(roomSize / 2) , roomSize, roomSize);
 }
 
 function matrix(shape) {
@@ -119,12 +126,12 @@ function createRoom(Z = [], startx = 3, starty = 3, width = 3, height = 3){
 }
 
 
-function buildIsles2(density, shape, complexity, width=31, height=31,){
+function buildIsles2(density, shape, complexity, width=size, height=size){
     if (iDensity < density && !iComplexity) {
         x = rand(1, parseInt(shape[1] / 2)) * 2, y = rand(1, parseInt(shape[0] / 2)) * 2; // pick a random position
         Z[y][x] = !!1;
         iDensity++;
-    } else if (iDensity == density) createRoom(Z, parseInt(width / 2) - 5 + 1, parseInt(height / 2) - 5 + 1, 9, 9);
+    } else if (iDensity == density) createRoom(Z, parseInt(width / 2) - parseInt(roomSize / 2) , parseInt(height / 2) - parseInt(roomSize / 2) , roomSize, roomSize);
     while (iDensity < density) {
         if(iComplexity < complexity){
             iComplexity ++

@@ -215,11 +215,18 @@ fg.protoLevel = {
     },
     getRowsFromMaze() {
         var rows = [];
+        
         for (let line of maze) {
             rows[rows.length] = "";
-            for (const cel of line) {
-                if(cel) rows[rows.length - 1] += "X";
-                else rows[rows.length - 1] += " ";
+            for (let cell of line) {
+                if(cell) rows[rows.length - 1] += "XX";
+                else rows[rows.length - 1] += "  ";
+            }
+
+            rows[rows.length] = "";
+            for (let cell of line) {
+                if(cell) rows[rows.length - 1] += "XX";
+                else rows[rows.length - 1] += "  ";
             }
         }
 
@@ -428,16 +435,16 @@ fg.Active =
         speedX: 0,//-0.49
         speedY: 0,
         grounded: false,
-        maxSpeedX: .14,//0.12
-        maxSpeedY: .25,
+        maxSpeedX: .06,//0.12
+        maxSpeedY: .06,
         entitiesToTest: [],
         searchDepth: 6,
         bounceness: 0.2,//0.75
-        airFriction: 0.99,
+        airFriction: 0.85,
         soilFriction: 0.75,
         ignoreFriction: false,
-        accelX: 0.01,
-        accelY: 0.1,
+        accelX: 0.06,
+        accelY: 0.06,
         accelAirX: 0.0075,
         entitiesToResolveX: null,
         entitiesToResolveY: null,
@@ -446,10 +453,11 @@ fg.Active =
         backGround: true,
         life: 100,
         update: function () {
-            this.addGravity();
+            // this.addGravity();
             this.entitiesToTest = fg.Game.searchArea(this.x + (this.width / 2), this.y + (this.height / 2), this.searchDepth, this.searchDepth);
             this.lastPosition = { x: this.x, y: this.y, grounded: this.grounded, speedX: this.speedX, speedY: this.speedY };
-            this.speedX = this.getSpeedX();
+            // this.speedX = this.getSpeedX();
+            // this.speedY = this.getSpeedY();
             for (var index = 0, entity; entity = fg.Game.actors[index]; index++)
                 this.entitiesToTest.push(entity);
             this.ignoreFriction = false;
@@ -460,11 +468,17 @@ fg.Active =
         getSpeedX: function () {
             return Math.abs(this.speedX) * this.getFriction() > 0.001 ? this.speedX * this.getFriction() : 0;
         },
+        getSpeedY: function () {
+            return Math.abs(this.speedY) * this.getFriction() > 0.001 ? this.speedY * this.getFriction() : 0;
+        },
         getFriction: function () {
-            return this.ignoreFriction ? 1 : (this.grounded ? this.soilFriction : this.airFriction);
+            return this.ignoreFriction ? 1 : this.soilFriction; // (this.grounded ? this.soilFriction : this.airFriction);
         },
         getAccelX: function () {
-            return this.grounded ? this.accelX : this.accelAirX;
+            return this.accelX;
+        },
+        getAccelY: function () {
+            return this.accelY;
         },
         addGravity: function () {
             this.speedY = this.speedY < this.maxSpeedY ? this.speedY + fg.Game.gravity : this.maxSpeedY;
@@ -485,7 +499,7 @@ fg.Active =
             }
             if (this.entitiesToResolveX.length > 0) {
                 this.resolveCollisions(this.entitiesToResolveX, this.entitiesToResolveY);
-                if (this.type == TYPE.ACTOR && (Math.abs(this.speedX) >= Math.abs(this.maxSpeedX * 1.5) || Math.abs(this.speedY) > Math.abs(this.maxSpeedY * 1.5))) this.life = 0;
+                if (this.type == TYPE.ACTOR && (Math.abs(this.speedX) >= Math.abs(this.maxSpeedX * 2) || Math.abs(this.speedY) > Math.abs(this.maxSpeedY * 2))) this.life = 0;
             } else {
                 this.addedSpeedX = 0;
                 this.x = this.nextPosition.x;
@@ -2019,14 +2033,14 @@ fg.Actor = function (id, type, x, y, cx, cy, index) {
     actor.cacheHeight = actor.height;
     //powerUps
     actor.glove = false;
-    actor.wallJump = false;
+    actor.wallJump = true;
 
     actor.wallSlideSpeed = 0.082;
     actor.wallSliding = false;
     actor.segments = [];
     actor.wait = 0;
     actor.respawn = 0;
-    actor.lastCheckPoint = null;
+    actor.lastCheckPoint = { id:"3-3" };
     actor.bounceness = 0;
     actor.searchDepth = 12;
     actor.drawTile = function (c, ctx) {
@@ -2082,6 +2096,8 @@ fg.Actor = function (id, type, x, y, cx, cy, index) {
     actor.update = function () {
         if (this.checkDeath() || this.disabled) return;
         this.soilFriction = 0.25;
+        this.speedX = 0;
+        this.speedY = 0;
         if (fg.Input.actions["jump"]) {
             if (this.canJump) {
                 this.speedY = -(Math.abs(this.speedY) + this.accelY <= (0.0125 * fg.Timer.deltaTime) ? Math.abs(this.speedY) + this.accelY : (0.0125 * fg.Timer.deltaTime));
@@ -2092,24 +2108,23 @@ fg.Actor = function (id, type, x, y, cx, cy, index) {
         this.active = false;
         if (fg.Input.actions["left"]) {
             this.active = true;
-            this.soilFriction = 1;
-            this.speedX = this.speedX - this.getAccelX() >= -this.maxSpeedX ? this.speedX - this.getAccelX() : -this.maxSpeedX;
-        } else if (fg.Input.actions["right"]) {
+            // this.soilFriction = 1;
+            this.speedX = -this.getAccelX(); // this.speedX - this.getAccelX() >= -this.maxSpeedX ? this.speedX - this.getAccelX() : -this.maxSpeedX;
+        } if (fg.Input.actions["right"]) {
             this.active = true;
-            this.soilFriction = 1;
-            this.speedX = this.speedX + this.getAccelX() <= this.maxSpeedX ? this.speedX + this.getAccelX() : this.maxSpeedX;
+            // this.soilFriction = 1;
+            this.speedX = this.getAccelX(); // this.speedX + this.getAccelX() <= this.maxSpeedX ? this.speedX + this.getAccelX() : this.maxSpeedX;
+        } if (fg.Input.actions["up"]) {
+            this.active = true;
+            // this.soilFriction = 1;
+            this.speedY = -this.getAccelY(); // this.speedY - this.getAccelY() >= -this.maxSpeedY ? this.speedY - this.getAccelY() : -this.maxSpeedY;
+        } if (fg.Input.actions["down"]) {
+            this.active = true;
+            // this.soilFriction = 1;
+            this.speedY = this.getAccelY(); // this.speedY + this.getAccelY() <= this.maxSpeedY ? this.speedY + this.getAccelY() : this.maxSpeedY;
         }
         this.vectors = undefined;
         fg.Active.update.call(this);
-        this.wallSliding = false;
-        if (this.wallJump && !this.grounded && this.speedY > 0) {
-            if ((fg.Input.actions["left"] || fg.Input.actions["right"]) && this.speedX == 0) {
-                this.wallSliding = true;
-                if (!fg.Input.actions["jump"]) this.canJump = true;
-                this.speedY = this.wallSlideSpeed//0.082;
-                this.speedX = fg.Input.actions["right"] ? 0.01 : -0.01;
-            }
-        }
     };
     return actor;
 }
@@ -2171,6 +2186,8 @@ fg.Game =
             fg.Input.bind(fg.Input.KEY.D, "right");
             fg.Input.bind(fg.Input.KEY.ESC, "esc");
             fg.Input.bind(fg.Input.KEY.ENTER, "enter");
+            fg.Input.bind(fg.Input.KEY.UP_ARROW, "up");
+            fg.Input.bind(fg.Input.KEY.DOWN_ARROW, "down");
             if (fg.System.platform.mobile) {
                 fg.Input.bindTouch(fg.$("#btnMoveLeft"), "left");
                 fg.Input.bindTouch(fg.$("#btnMoveRight"), "right");
@@ -2871,11 +2888,13 @@ fg.Input = {
         if (fg.Input.bindings[event.keyCode]) {
             fg.Input.actions[fg.Input.bindings[event.keyCode]] = true;
         }
+        event.preventDefault();
     },
     keyup: function (event) {
         if (fg.Input.bindings[event.keyCode]) {
             delete fg.Input.actions[fg.Input.bindings[event.keyCode]];
         }
+        event.preventDefault();
     },
     initTouch: function (canvas) {
         canvas.addEventListener("touchstart", handleStart, false);

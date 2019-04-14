@@ -16,21 +16,13 @@ html
     //if lte IE 8
       script(src='stylesheets/ie/html5shiv.js')
     script(src='/javascripts/jquery.min.js')
-    script(src='/javascripts/jquery.dropotron.min.js')
-    script(src='/javascripts/jquery.scrollgress.min.js')
-    script(src='/javascripts/jquery.scrolly.min.js')
-    script(src='/javascripts/jquery.slidertron.min.js')
     script(src='/javascripts/skel.min.js')
     script(src='/javascripts/init.js')
     noscript
       link(rel='stylesheet', href='/stylesheets/skel.css')
       link(rel='stylesheet', href='/stylesheets/style.css')
       link(rel='stylesheet', href='/stylesheets/style-xlarge.css')
-    //if lte IE 9
-      link(rel='stylesheet', href='/stylesheets/ie/v9.css')
-    //if lte IE 8
-      link(rel='stylesheet', href='/stylesheets/ie/v8.css')
-  body.landing(onload="fg.Game.start();")
+  body.landing(onload="window.fg && fg.Game.start();")
     // Header
     header#header.alt.skel-layers-fixed
       //- h1
