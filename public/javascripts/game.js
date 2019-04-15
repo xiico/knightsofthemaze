@@ -2907,14 +2907,14 @@ fg.Input = {
     keydown: function (event) {
         if (fg.Input.bindings[event.keyCode]) {
             fg.Input.actions[fg.Input.bindings[event.keyCode]] = true;
+            event.preventDefault();
         }
-        event.preventDefault();
     },
     keyup: function (event) {
         if (fg.Input.bindings[event.keyCode]) {
             delete fg.Input.actions[fg.Input.bindings[event.keyCode]];
+            event.preventDefault();
         }
-        event.preventDefault();
     },
     initTouch: function (canvas) {
         canvas.addEventListener("touchstart", handleStart, false);
