@@ -212,6 +212,8 @@ fg.protoLevel = {
             this.customProperties = window[this.name].customProperties;
         if (window[this.name].warpDecks)
             this.warpDecks = window[this.name].warpDecks;
+        if (window[this.name].srcs)
+            this.srcs = window[this.name].srcs;
     },
     getRowsFromMaze() {
         var rows = [];
@@ -220,13 +222,13 @@ fg.protoLevel = {
             rows[rows.length] = "";
             for (let cell of line) {
                 if(cell) rows[rows.length - 1] += "XX";
-                else rows[rows.length - 1] += "  ";
+                else rows[rows.length - 1] += "FF";
             }
 
             rows[rows.length] = "";
             for (let cell of line) {
                 if(cell) rows[rows.length - 1] += "XX";
-                else rows[rows.length - 1] += "  ";
+                else rows[rows.length - 1] += "FF";
             }
         }
 
@@ -423,7 +425,15 @@ fg.protoEntity = {
         c.width = this.width;
         c.height = this.height;
         ctx.fillStyle = 'rgba(0,0,0,.75)';
-        ctx.fillRect(0, 0, this.height, this.width);
+        var src = fg.Game.currentLevel.srcs.find(e => e[this.type] != null);
+        if (src) {
+            var img = fg.$new("img");
+            img.addEventListener('load', function() {
+                // execute drawImage statements here
+                ctx.drawImage(img, 0, 0);
+              }, false);
+              img.src = "/assets/" + src[this.type];
+        } else ctx.fillRect(0, 0, this.height, this.width);
         return c;
     },
     update: function () { }
@@ -694,6 +704,8 @@ fg.Entity = function (id, type, x, y, cx, cy, index) {
             return fg.Secret(id, type, x, y, cx, cy, index);
         case TYPE.WARPDECK:
             return fg.WarpDeck(id, type, x, y, cx, cy, index);
+        case TYPE.FLOOR:
+            return fg.Floor(id, type, x, y, cx, cy, index);
         default:
             return Object.create(fg.protoEntity).init(id, type, x, y, cx, cy, index);
     }
@@ -2020,6 +2032,14 @@ fg.Crate = function (id, type, x, y, cx, cy, index) {
     return crate;
 }
 
+fg.Floor = function (id, type, x, y, cx, cy, index) {
+    var floor = Object.create(fg.protoEntity);
+    floor.init(id, type, x, y, cx, cy, index);
+    floor.collidable = false;
+    fg.Game.currentLevel.applySettingsToEntity(floor);
+    return floor;
+}
+
 fg.Actor = function (id, type, x, y, cx, cy, index) {
     var actor = Object.create(fg.protoEntity);
     actor = Object.assign(actor, fg.Active);
@@ -3006,5 +3026,6 @@ var TYPE = {
     SENTRY: "e",
     ACTOR: "A",
     SECRET: "i",
-    WARPDECK: "w"
+    WARPDECK: "w",
+    FLOOR: "F"
 }
