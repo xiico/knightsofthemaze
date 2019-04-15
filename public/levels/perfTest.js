@@ -22,4 +22,6 @@ var perfTest = { tiles:
     "X X \n" +
     " X X\n" +
     "X X \n" +
-    " X X"}
+    " X X",    
+    floor_src: "dungeon_floor.png",
+}

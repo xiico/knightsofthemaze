@@ -102,7 +102,7 @@
 fg.System =
     {
         context: null,
-        defaultSide: 24,//24
+        defaultSide: 16,//24
         searchDepth: 16,//16
         canvas: null,
         platform: {},
@@ -2071,10 +2071,10 @@ fg.Actor = function (id, type, x, y, cx, cy, index) {
         this.vanished = true;
         this.respawn = 240;
     },
-        actor.drawSegments = function () {
-            for (var i = 0, segment; segment = this.segments[i]; i++)
-                fg.Game.foreGroundEntities.push(segment);
-        };
+    actor.drawSegments = function () {
+        for (var i = 0, segment; segment = this.segments[i]; i++)
+            fg.Game.foreGroundEntities.push(segment);
+    };
     actor.checkDeath = function () {
         if (this.life == 0) {
             if (this.segments.length == 0) this.explode();
