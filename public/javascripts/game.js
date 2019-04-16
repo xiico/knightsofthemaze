@@ -2160,10 +2160,8 @@ fg.Actor = function (id, type, x, y, cx, cy, index) {
         this.speedY = 0;
         if (fg.Input.actions["jump"]) {
             if (this.canJump) {
-                this.speedY = -(Math.abs(this.speedY) + this.accelY <= (0.0125 * fg.Timer.deltaTime) ? Math.abs(this.speedY) + this.accelY : (0.0125 * fg.Timer.deltaTime));
-                if (this.wallSliding) this.speedX = fg.Input.actions["left"] ? 0.06 : -0.06;
+
             }
-            if (Math.abs(this.speedY) >= 0.2) this.canJump = false;
         }
         this.active = false;
         if (fg.Input.actions["left"]) {
