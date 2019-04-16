@@ -9,8 +9,11 @@ block content
         canvas(id="game" width="320" height="180")
         .mobileInput
           .divControls
-            img#btnMoveLeft
-            img#btnMoveRight
+            img#btnMoveUp
+            .bottom
+              img#btnMoveLeft
+              img#btnMoveDown
+              img#btnMoveRight
           .divJump
             img#btnJump
   script(src="/javascripts/maze-generator.js")

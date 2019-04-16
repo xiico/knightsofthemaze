@@ -134,6 +134,17 @@ fg.System =
             auxCanvasCtx.fill();
             imgLeft.src = auxCanvas.toDataURL("image/png");
 
+            var imgDown = document.getElementById("btnMoveDown");
+            auxCanvasCtx.beginPath();
+            auxCanvasCtx.fillStyle = "#aaaaaa";
+            auxCanvasCtx.fillRect(0, 0, auxCanvas.width, auxCanvas.height);
+            auxCanvasCtx.fillStyle = "#000000";
+            auxCanvasCtx.moveTo(16, 16);
+            auxCanvasCtx.lineTo(48, 16);
+            auxCanvasCtx.lineTo(32, 48);
+            auxCanvasCtx.fill();
+            imgDown.src = auxCanvas.toDataURL("image/png");            
+
             var imgRight = document.getElementById("btnMoveRight");
             auxCanvasCtx.beginPath();
             auxCanvasCtx.fillStyle = "#aaaaaa";
@@ -144,6 +155,18 @@ fg.System =
             auxCanvasCtx.lineTo(48, 32);
             auxCanvasCtx.fill();
             imgRight.src = auxCanvas.toDataURL("image/png");
+
+
+            var imgUp = document.getElementById("btnMoveUp");
+            auxCanvasCtx.beginPath();
+            auxCanvasCtx.fillStyle = "#aaaaaa";
+            auxCanvasCtx.fillRect(0, 0, auxCanvas.width, auxCanvas.height);
+            auxCanvasCtx.fillStyle = "#000000";
+            auxCanvasCtx.moveTo(32, 16);
+            auxCanvasCtx.lineTo(48, 48);
+            auxCanvasCtx.lineTo(16, 48);
+            auxCanvasCtx.fill();
+            imgUp.src = auxCanvas.toDataURL("image/png");            
 
             var imgJump = document.getElementById("btnJump");
             auxCanvasCtx.beginPath();
@@ -422,14 +445,14 @@ fg.protoEntity = {
         }
     },
     drawTile: function (c, ctx) {
-        c.width = this.width;
-        c.height = this.height;
         ctx.fillStyle = 'rgba(0,0,0,.75)';
         var src = fg.Game.currentLevel.srcs.find(e => e[this.type] != null);
         if (src) {
             var img = fg.$new("img");
             img.addEventListener('load', function() {
                 // execute drawImage statements here
+                c.width = src.width;
+                c.height = src.height;
                 ctx.drawImage(img, 0, 0);
               }, false);
               img.src = "/assets/" + src[this.type];
@@ -2035,7 +2058,22 @@ fg.Crate = function (id, type, x, y, cx, cy, index) {
 fg.Floor = function (id, type, x, y, cx, cy, index) {
     var floor = Object.create(fg.protoEntity);
     floor.init(id, type, x, y, cx, cy, index);
+    floor.tiles = [{x:0,y:0 },{x:16,y:0 },{x:32,y:0 },
+                {x:0,y:16},{x:16,y:16},{x:32,y:16},
+                {x:0,y:32},{x:16,y:32}]
     floor.collidable = false;
+    floor.cacheX = -1;
+    floor.cacheY = -1;
+    floor.draw = function (foreGround) {
+        if(this.cacheX == -1)
+        {
+            var index = rand(0,8);
+            this.cacheX = floor.tiles[index].x;
+            this.cacheY = floor.tiles[index].y;
+        }
+        fg.protoEntity.draw.call(this);
+        
+    }
     fg.Game.currentLevel.applySettingsToEntity(floor);
     return floor;
 }
@@ -2211,6 +2249,8 @@ fg.Game =
             if (fg.System.platform.mobile) {
                 fg.Input.bindTouch(fg.$("#btnMoveLeft"), "left");
                 fg.Input.bindTouch(fg.$("#btnMoveRight"), "right");
+                fg.Input.bindTouch(fg.$("#btnMoveUp"), "up");
+                fg.Input.bindTouch(fg.$("#btnMoveDown"), "down");
                 fg.Input.bindTouch(fg.$("#btnJump"), "jump");
                 //fg.Input.bindTouch(fg.$("#main"), "esc");
             }
@@ -2483,7 +2523,7 @@ fg.Game =
 
             ctx.stroke();
 
-            this.drawFont("Press space...", "", 120, 180);
+            this.drawFont("Press any key...", "", 120, 150);
             /*if (tracks[0].paused) {
                 tracks[0].play();
             }*/
