@@ -2070,6 +2070,8 @@ fg.Floor = function (id, type, x, y, cx, cy, index) {
             var index = rand(0,8);
             this.cacheX = floor.tiles[index].x;
             this.cacheY = floor.tiles[index].y;
+            this.cacheWidth = 16;
+            this.cacheHeight = 16;
         }
         fg.protoEntity.draw.call(this);
         
