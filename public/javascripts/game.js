@@ -451,8 +451,8 @@ fg.protoEntity = {
             var img = fg.$new("img");
             img.addEventListener('load', function() {
                 // execute drawImage statements here
-                c.width = src.width;
-                c.height = src.height;
+                c.width = 16;//src.width;
+                c.height = 16;//src.height;
                 ctx.drawImage(img, 0, 0);
               }, false);
               img.src = "/assets/" + src[this.type];
@@ -2062,17 +2062,17 @@ fg.Floor = function (id, type, x, y, cx, cy, index) {
                 {x:0,y:16},{x:16,y:16},{x:32,y:16},
                 {x:0,y:32},{x:16,y:32}]
     floor.collidable = false;
-    floor.cacheX = -1;
-    floor.cacheY = -1;
+    // floor.cacheX = -1;
+    // floor.cacheY = -1;
     floor.draw = function (foreGround) {
-        if(this.cacheX == -1)
-        {
-            var index = rand(0,8);
-            this.cacheX = floor.tiles[index].x;
-            this.cacheY = floor.tiles[index].y;
-            this.cacheWidth = 16;
-            this.cacheHeight = 16;
-        }
+        // if(this.cacheX == -1)
+        // {
+        //     var index = rand(0,8);
+        //     this.cacheX = floor.tiles[index].x;
+        //     this.cacheY = floor.tiles[index].y;
+        //     this.cacheWidth = 16;
+        //     this.cacheHeight = 16;
+        // }
         fg.protoEntity.draw.call(this);
         
     }
