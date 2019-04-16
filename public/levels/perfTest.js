@@ -1,5 +1,5 @@
 var perfTest = { tiles:
-    "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n"+
+    "X1XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n"+
     "X                      X╝      XX                                                                                     X\n"+
     "X   CX4   XXX                  ╚X                       ╔X                                                            X\n"+
     "XCC CXXXXXX       X╗               X╗   X╗1        p    XX                                     XXX   X X              X\n"+
@@ -23,5 +23,5 @@ var perfTest = { tiles:
     " X X\n" +
     "X X \n" +
     " X X",    
-    srcs: [{ "F": "dungeon_floor.png", width: 96, height: 48 }],
+    srcs: [{ "F": "dungeon_floor.png", width: 96, height: 64 }],
 }
