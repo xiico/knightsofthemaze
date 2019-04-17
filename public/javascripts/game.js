@@ -973,7 +973,7 @@ fg.Wall = function (id, type, x, y, cx, cy, index) {
             } else if (bottom && bottom.type == "X" && bottomRight && bottomRight.type == "F") {
                 this.cacheX = 32;
                 this.cacheY = 0;
-            } else if (topLeft && topLeft.type == TYPE.FLOOR && top && top.type == TYPE.WALL && bottom && bottom.type == TYPE.WALL) {
+            } else if (left && left.type == TYPE.FLOOR && top && top.type == TYPE.WALL && bottom && bottom.type == TYPE.WALL) {
                 this.cacheX = 64;
                 this.cacheY = 16;
             } else if (topRight && topRight.type == TYPE.FLOOR && top && top.type == TYPE.WALL && bottom && bottom.type == TYPE.WALL && bottomBottomRight && bottomBottomRight.type == TYPE.WALL) {
