@@ -18,8 +18,10 @@ var colSize = 4;
 var rowSize = 4;
 var roomSize = 5;
 var count = 0;
-var size = 39;
+var size = 43;//39
+var seed = Math.random();
 var seeded = new Math.seedrandom(123);
+var lastRnd;
 function main(){    
     count++;
     if(count % 30 == 0) {
@@ -83,7 +85,8 @@ function buildIsles(density, shape, complexity, width, height) {
             if (y < shape[0] - 2)
                 neighbours.push(new Array(y + 2, x));
             if (neighbours.length) {
-                var ng = neighbours[rand(0, neighbours.length)];
+                var index = rand(0, neighbours.length)
+                var ng = neighbours[index];
                 y_ = ng[0], x_ = ng[1];
                 if (Z[y_][x_] == !!0) {
                     Z[y_][x_] = !!1;
@@ -113,7 +116,8 @@ function matrix(shape) {
 }
 
 function rand(min, max) {
-    return parseInt(seeded() * (max - min) + min);
+    lastRnd = seeded();
+    return parseInt(lastRnd * (max - min) + min);
 }
 
 function createRoom(Z = [], startx = 3, starty = 3, width = 3, height = 3){

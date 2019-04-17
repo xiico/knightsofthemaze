@@ -2164,7 +2164,16 @@ fg.Floor = function (id, type, x, y, cx, cy, index) {
                 this.cacheY = floor.tiles[index].y;
                 this.cacheWidth = 16;
                 this.cacheHeight = 16;
+
+                if(row >= parseInt(size * 2 / 2) - parseInt(roomSize * 2 / 2) && row <= parseInt(size * 2 / 2) + parseInt(roomSize * 2 / 2) &&
+                   col >= parseInt(size * 2 / 2) - parseInt(roomSize * 2 / 2) && col <= parseInt(size * 2 / 2) + parseInt(roomSize * 2 / 2) ){
+                    this.cacheX = 80;
+                    this.cacheY = 32;
+                }
             }
+
+            var row = parseInt(this.id.split('-')[0]);
+            var col = parseInt(this.id.split('-')[1]);
         }
         fg.protoEntity.draw.call(this);
         
