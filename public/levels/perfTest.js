@@ -23,5 +23,6 @@ var perfTest = { tiles:
     " X X\n" +
     "X X \n" +
     " X X",    
-    srcs: [{ "F": "dungeon_floor.png", width: 96, height: 64 }],
+    srcs: [{ "F": "dungeon_floor.png", width: 96, height: 80 },
+           { "X": "dungeon_walls.png", width: 96, height: 96 }],
 }

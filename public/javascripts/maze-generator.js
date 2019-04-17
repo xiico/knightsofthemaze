@@ -19,6 +19,7 @@ var rowSize = 4;
 var roomSize = 5;
 var count = 0;
 var size = 39;
+var seeded = new Math.seedrandom(123);
 function main(){    
     count++;
     if(count % 30 == 0) {
@@ -112,7 +113,7 @@ function matrix(shape) {
 }
 
 function rand(min, max) {
-    return parseInt(Math.random() * (max - min) + min);
+    return parseInt(seeded() * (max - min) + min);
 }
 
 function createRoom(Z = [], startx = 3, starty = 3, width = 3, height = 3){

@@ -883,51 +883,118 @@ fg.Bouncer = {
 fg.Wall = function (id, type, x, y, cx, cy, index) {
     var wall = Object.create(fg.protoEntity);
     wall.init(id, type, x, y, cx, cy, index);
-    fg.Game.currentLevel.applyFeaturesToEntity(wall);
-    if (type == TYPE.GROWER)
-        wall = Object.assign(wall, fg.Interactive, fg.Grower);
-    if (wall.type == TYPE.PLATFORM)
-        wall = Object.assign(wall, fg.Interactive, fg.Platform, wall.moving ? fg.MovingPlatform : null);
-    wall.slope = false;
-    wall.backGround = true;
-    wall.foreGround = false;
-    wall.cacheWidth = wall.width;
-    wall.cacheHeight = wall.height;
-    if (type == TYPE.BOUNCER) {
-        wall = Object.assign(wall, fg.Bouncer);
-    }
-    wall.drawTile = function (c, ctx) {
-        c.width = this.width * 4;
-        c.height = this.height * (this.type == TYPE.PLATFORM ? 1 : 4);
-        for (var i = 0; i < (this.type == TYPE.PLATFORM ? 2 : 4); i++) {
+    wall.tiles = [{x:0 ,y:32},{x:16,y:32},{x:32,y:32},
+                  {x:0 ,y:48},{x:16,y:48},{x:32,y:48},
+                  {x:0 ,y:64},{x:16,y:64},{x:32,y:64},
+                  {x:0 ,y:80},{x:16,y:80},{x:32,y:80}]
+    wall.cacheX = -1;
+    // fg.Game.currentLevel.applyFeaturesToEntity(wall);
+    // if (type == TYPE.GROWER)
+    //     wall = Object.assign(wall, fg.Interactive, fg.Grower);
+    // if (wall.type == TYPE.PLATFORM)
+    //     wall = Object.assign(wall, fg.Interactive, fg.Platform, wall.moving ? fg.MovingPlatform : null);
+    // wall.slope = false;
+    // wall.backGround = true;
+    // wall.foreGround = false;
+    // wall.cacheWidth = wall.width;
+    // wall.cacheHeight = wall.height;
+    // if (type == TYPE.BOUNCER) {
+    //     wall = Object.assign(wall, fg.Bouncer);
+    // }
+    // wall.drawTile = function (c, ctx) {
+    //     c.width = this.width * 4;
+    //     c.height = this.height * (this.type == TYPE.PLATFORM ? 1 : 4);
+    //     for (var i = 0; i < (this.type == TYPE.PLATFORM ? 2 : 4); i++) {
 
-            var startX = (i == 1 || i == 3 ? this.width : 0);
-            var startY = (i == 2 || i == 3 ? this.width : 0);
-            var widthMultiplyer = (i == 1 || i == 3 ? 3 : 1);
-            var heightMultiplyer = (i == 2 || i == 3 ? 3 : 1);
+    //         var startX = (i == 1 || i == 3 ? this.width : 0);
+    //         var startY = (i == 2 || i == 3 ? this.width : 0);
+    //         var widthMultiplyer = (i == 1 || i == 3 ? 3 : 1);
+    //         var heightMultiplyer = (i == 2 || i == 3 ? 3 : 1);
 
-            ctx.beginPath();
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = this.color;
-            ctx.rect(startX + .5, startY + .5, (this.width * widthMultiplyer) - 1, (this.height * heightMultiplyer) - 1);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.strokeStyle = "grey";
-            ctx.rect(startX + 1.5, startY + 1.5, (this.width * widthMultiplyer) - 3, (this.height * heightMultiplyer) - 3);
-            ctx.stroke();
-            if (this.type == TYPE.TUNNEL)
-                ctx.fillStyle = 'rgba(0,0,0,.5)';
-            else
-                ctx.fillStyle = this.color;
-            ctx.fillRect(startX + 2, startY + 2, (this.width * widthMultiplyer) - 4, (this.height * heightMultiplyer) - 4);
+    //         ctx.beginPath();
+    //         ctx.lineWidth = 1;
+    //         ctx.strokeStyle = this.color;
+    //         ctx.rect(startX + .5, startY + .5, (this.width * widthMultiplyer) - 1, (this.height * heightMultiplyer) - 1);
+    //         ctx.stroke();
+    //         ctx.beginPath();
+    //         ctx.strokeStyle = "grey";
+    //         ctx.rect(startX + 1.5, startY + 1.5, (this.width * widthMultiplyer) - 3, (this.height * heightMultiplyer) - 3);
+    //         ctx.stroke();
+    //         if (this.type == TYPE.TUNNEL)
+    //             ctx.fillStyle = 'rgba(0,0,0,.5)';
+    //         else
+    //             ctx.fillStyle = this.color;
+    //         ctx.fillRect(startX + 2, startY + 2, (this.width * widthMultiplyer) - 4, (this.height * heightMultiplyer) - 4);
+    //     }
+    //     return c;
+    // };
+    // if (type == TYPE.SWITCH)
+    //     wall = Object.assign(wall, fg.Interactive, fg.Switch, (wall.moveTarget || wall.growTarget) ? fg.ChangeTarget : null);
+    // if (type == TYPE.TUNNEL)
+    //     wall = Object.assign(wall, fg.Tunnel);
+    // fg.Game.currentLevel.applySettingsToEntity(wall);
+    wall.draw = function (foreGround) {
+        if(this.cacheX == -1)
+        {
+            var line = fg.Game.currentLevel.entities[parseInt(this.id.split('-')[0])];
+            var topLine = fg.Game.currentLevel.entities[parseInt(this.id.split('-')[0]) - 1];
+            var bottomLine = fg.Game.currentLevel.entities[parseInt(this.id.split('-')[0]) + 1];
+            var bottomBottomLine = fg.Game.currentLevel.entities[parseInt(this.id.split('-')[0]) + 2];
+            var right, left, top, topLeft, topRight, bottom, bottomLeft, bottomRight, bottomBottom, bottomBottomRight, bottomBottomLeft;
+            if (line) right = line[parseInt(this.id.split('-')[1]) + 1];
+            if (line) left = line[parseInt(this.id.split('-')[1]) - 1];
+            if (topLine) top = topLine[parseInt(this.id.split('-')[1])];
+            if (topLine) topLeft = topLine[parseInt(this.id.split('-')[1]) - 1];
+            if (topLine) topRight = topLine[parseInt(this.id.split('-')[1]) + 1];
+            if (bottomLine) bottom = bottomLine[parseInt(this.id.split('-')[1])];
+            if (bottomLine) bottomLeft = bottomLine[parseInt(this.id.split('-')[1]) - 1];
+            if (bottomLine) bottomRight = bottomLine[parseInt(this.id.split('-')[1]) + 1];
+            if (bottomBottomLine) bottomBottom = bottomBottomLine[parseInt(this.id.split('-')[1])];
+            if (bottomBottomLine) bottomBottomLeft = bottomBottomLine[parseInt(this.id.split('-')[1]) - 1];
+            if (bottomBottomLine) bottomBottomRight = bottomBottomLine[parseInt(this.id.split('-')[1]) + 1];
+            if((!left || ((left.type == "F" && bottomLeft && bottomLeft.type == TYPE.FLOOR) && bottom && bottom.type == "X" && bottomBottom && bottomBottom.type == "X" ) )) {
+                this.cacheX = 0;
+                this.cacheY = 0;
+            } else if((!right || ((right.type == "F" && bottomRight && bottomRight.type == TYPE.FLOOR) && bottom && bottom.type == "X" && bottomBottom && bottomBottom.type == "X" ))) {
+                this.cacheX = 32;
+                this.cacheY = 0;
+            } else if (left && left.type == "F" && bottom && bottom.type == "X" && bottomBottom && bottomBottom.type == "F") {
+                this.cacheX = 0;
+                this.cacheY = 16;
+            } else if (right && right.type == "F" && bottom && bottom.type == "X" && bottomBottom && bottomBottom.type == "F") {
+                this.cacheX = 32;
+                this.cacheY = 16;
+            } else if (bottom && bottom.type == "X" && bottomBottom && bottomBottom.type == "F") {
+                this.cacheX = 16;
+                this.cacheY = 16;
+            } else if (bottom && bottom.type == "X" && bottomLeft && bottomLeft.type == "F") {
+                this.cacheX = 0;
+                this.cacheY = 0;
+            } else if (bottom && bottom.type == "X" && bottomRight && bottomRight.type == "F") {
+                this.cacheX = 32;
+                this.cacheY = 0;
+            } else if (topLeft && topLeft.type == TYPE.FLOOR && top && top.type == TYPE.WALL && bottom && bottom.type == TYPE.WALL) {
+                this.cacheX = 64;
+                this.cacheY = 16;
+            } else if (topRight && topRight.type == TYPE.FLOOR && top && top.type == TYPE.WALL && bottom && bottom.type == TYPE.WALL && bottomBottomRight && bottomBottomRight.type == TYPE.WALL) {
+                this.cacheX = 48;
+                this.cacheY = 16;
+            } else if (bottom && bottom.type == TYPE.WALL && left && left.type == TYPE.WALL && right && right.type == TYPE.WALL && bottomBottomRight && bottomBottomRight.type == TYPE.FLOOR) {
+                this.cacheX = 48;
+                this.cacheY = 0;
+            } else if (bottom && bottom.type == TYPE.WALL && left && left.type == TYPE.WALL && right && right.type == TYPE.WALL && bottomBottomLeft && bottomBottomLeft.type == TYPE.FLOOR) {
+                this.cacheX = 64;
+                this.cacheY = 0;
+            } else {
+                var index = rand(0,11);
+                this.cacheX = this.tiles[index].x;
+                this.cacheY = this.tiles[index].y;
+            }
+            this.cacheWidth = 16;
+            this.cacheHeight = 16;
         }
-        return c;
-    };
-    if (type == TYPE.SWITCH)
-        wall = Object.assign(wall, fg.Interactive, fg.Switch, (wall.moveTarget || wall.growTarget) ? fg.ChangeTarget : null);
-    if (type == TYPE.TUNNEL)
-        wall = Object.assign(wall, fg.Tunnel);
-    fg.Game.currentLevel.applySettingsToEntity(wall);
+        fg.protoEntity.draw.call(this);        
+    }
     return wall;
 }
 
@@ -2067,11 +2134,37 @@ fg.Floor = function (id, type, x, y, cx, cy, index) {
     floor.draw = function (foreGround) {
         if(this.cacheX == -1)
         {
-            var index = rand(0,8);
-            this.cacheX = floor.tiles[index].x;
-            this.cacheY = floor.tiles[index].y;
-            this.cacheWidth = 16;
-            this.cacheHeight = 16;
+            var line = fg.Game.currentLevel.entities[parseInt(this.id.split('-')[0])];
+            var topLine = fg.Game.currentLevel.entities[parseInt(this.id.split('-')[0]) - 1];
+            var bottomLine = fg.Game.currentLevel.entities[parseInt(this.id.split('-')[0]) + 1];
+            var bottomBottomLine = fg.Game.currentLevel.entities[parseInt(this.id.split('-')[0]) + 2];
+            var right, left, top, bottom, bottomLeft, bottomRight;
+            if (line) right = line[parseInt(this.id.split('-')[1]) + 1];
+            if (line) left = line[parseInt(this.id.split('-')[1]) - 1];
+            if (topLine) top = topLine[parseInt(this.id.split('-')[1])];
+            if (bottomLine) bottom = bottomLine[parseInt(this.id.split('-')[1])];
+            if (bottomLine) bottomLeft = bottomLine[parseInt(this.id.split('-')[1]) - 1];
+            if (bottomLine) bottomRight = bottomLine[parseInt(this.id.split('-')[1]) + 1];
+
+            if(bottom && bottom.type == TYPE.WALL) {
+                this.foreGround = true;
+                if(bottomLeft && bottomLeft.type == TYPE.FLOOR){
+                    this.cacheX = 0;
+                    this.cacheY = 64;
+                } else if (bottomRight && bottomRight.type == TYPE.FLOOR){
+                    this.cacheX = 32;
+                    this.cacheY = 64;
+                } else {
+                    this.cacheX = 16;
+                    this.cacheY = 64;
+                }
+            } else {
+                var index = rand(0,8);
+                this.cacheX = floor.tiles[index].x;
+                this.cacheY = floor.tiles[index].y;
+                this.cacheWidth = 16;
+                this.cacheHeight = 16;
+            }
         }
         fg.protoEntity.draw.call(this);
         
