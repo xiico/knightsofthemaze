@@ -466,24 +466,25 @@ fg.protoEntity = {
     playAnimation: function(name){
         var animation = fg.Game.currentLevel.animations.find(a => a.name == name);
         if(animation){
-            this.curAnimation = new fg.Animation(animation.name);        
-            this.curAnimation.frames = animation.frames
+            this.curAnimation = new fg.Animation(animation);        
+            this.curAnimation.frames = animation.frames;
+            // this.curAnimation.interval = animation.interval;
             this.curAnimation.index = 0;
         }
     },
     update: function () { }
 }
 
-fg.Animation = function (name, frames=[], total = 4, interval = 100) {
+fg.Animation = function (animation){//name, frames=[], total = 4, interval = 100) {
     var self = this;
     self.getFrame = function() { 
         if(self.totalFrameTime > self.total) self.reset();
         return self.frames[Math.floor(self.totalFrameTime += self.interval)]; 
     },
-    self.name = name, 
-    self.frames = frames,
-    self.total = total,
-    self.interval = 16.6666 / interval;
+    self.name = animation.name, 
+    self.frames = animation.frames,
+    self.total = animation.frames.length,
+    self.interval = 16.6666 / animation.interval;
     self.totalFrameTime = 0;
     self.reset = function() {
         self.index = 0;
