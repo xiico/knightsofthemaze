@@ -413,6 +413,8 @@ fg.protoEntity = {
     height: fg.System.defaultSide,
     cacheWidth: fg.System.defaultSide,
     cacheHeight: fg.System.defaultSide,
+    cacheOffSetX: 0,
+    cacheOffSetY: 0,
     animations: [],
     init: function (id, type, x, y, cx, cy, index) {
         this.type = type;
@@ -439,7 +441,7 @@ fg.protoEntity = {
         }
         else {
             if (!foreGround && !this.backGround || foreGround && !this.foreGround || this.vanished) return;
-            fg.Render.draw(fg.Render.cached[this.type], this.cacheX, this.cacheY, this.cacheWidth, this.cacheHeight, this.x, this.y);
+            fg.Render.draw(fg.Render.cached[this.type], this.cacheX, this.cacheY, this.cacheWidth, this.cacheHeight, this.x + this.cacheOffSetX, this.y + this.cacheOffSetY);
         }
         if (fg.Game.showIds) {
             fg.System.context.font = "7px Arial";
@@ -475,16 +477,18 @@ fg.protoEntity = {
 fg.Animation = function (animation){//name, frames=[], total = 4, interval = 100) {
     var self = this;
     self.getFrame = function() { 
+        self.curFrame = Math.floor(self.totalFrameTime += self.interval);
         if(self.totalFrameTime > self.total) self.reset();
-        return self.frames[Math.floor(self.totalFrameTime += self.interval)]; 
+        return self.frames[self.curFrame]; 
     },
     self.name = animation.name, 
     self.frames = animation.frames,
     self.total = animation.frames.length,
     self.interval = 16.6666 / animation.interval;
     self.totalFrameTime = 0;
+    self.curFrame = 0;
     self.reset = function() {
-        self.index = 0;
+        self.curFrame = 0;
         self.totalFrameTime = 0;
     };
     self.update = function () {
@@ -2236,28 +2240,21 @@ fg.Actor = function (id, type, x, y, cx, cy, index) {
     actor.lastCheckPoint = { id:"3-3" };
     actor.bounceness = 0;
     actor.searchDepth = 12;
+    actor.facingRight = true;
     actor.drawTile = function (c, ctx) {
-        // c.width = this.width * 2;
-        // c.height = this.height;
-        // ctx.fillStyle = this.color;
-        // ctx.fillRect(0, 0, this.width, this.height);
-        // ctx.fillStyle = "white";
-        // ctx.fillRect(this.width, 0, this.width, this.height);
         fg.protoEntity.drawTile.call(this, c,ctx);
         return c;
     };
     actor.draw = function (foreGround) {
-        // c.width = this.width * 2;
-        // c.height = this.height;
-        // ctx.fillStyle = this.color;
-        // ctx.fillRect(0, 0, this.width, this.height);
-        // ctx.fillStyle = "white";
-        // ctx.fillRect(this.width, 0, this.width, this.height);
+        var fr = this.facingRight ? 0 : 32;
         var frame;
         if (this.curAnimation) frame = this.curAnimation.update();
+            var fr = this.facingRight ? 0 : 32;
         if (frame) {
+            this.cacheOffSetX = -3;
+            this.cacheOffSetY = -17;
             this.cacheX = frame.x;
-            this.cacheY = frame.y;
+            this.cacheY = frame.y + fr;
             this.cacheWidth = frame.width;
             this.cacheHeight = frame.height;
         } else {
@@ -2324,10 +2321,12 @@ fg.Actor = function (id, type, x, y, cx, cy, index) {
         if (fg.Input.actions["left"]) {
             this.active = true;
             // this.soilFriction = 1;
+            this.facingRight = false;
             this.speedX = -this.getAccelX(); // this.speedX - this.getAccelX() >= -this.maxSpeedX ? this.speedX - this.getAccelX() : -this.maxSpeedX;
         } if (fg.Input.actions["right"]) {
             this.active = true;
             // this.soilFriction = 1;
+            this.facingRight = true;
             this.speedX = this.getAccelX(); // this.speedX + this.getAccelX() <= this.maxSpeedX ? this.speedX + this.getAccelX() : this.maxSpeedX;
         } if (fg.Input.actions["up"]) {
             this.active = true;
