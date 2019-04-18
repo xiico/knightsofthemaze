@@ -466,10 +466,7 @@ fg.protoEntity = {
     playAnimation: function(name){
         var animation = fg.Game.currentLevel.animations.find(a => a.name == name);
         if(animation){
-            this.curAnimation = new fg.Animation(animation);        
-            this.curAnimation.frames = animation.frames;
-            // this.curAnimation.interval = animation.interval;
-            this.curAnimation.index = 0;
+            this.curAnimation = new fg.Animation(animation);
         }
     },
     update: function () { }
@@ -2199,15 +2196,15 @@ fg.Floor = function (id, type, x, y, cx, cy, index) {
                 this.cacheWidth = 16;
                 this.cacheHeight = 16;
 
-                if(row >= parseInt(size * 2 / 2) - parseInt(roomSize * 2 / 2) && row <= parseInt(size * 2 / 2) + parseInt(roomSize * 2 / 2) &&
-                   col >= parseInt(size * 2 / 2) - parseInt(roomSize * 2 / 2) && col <= parseInt(size * 2 / 2) + parseInt(roomSize * 2 / 2) ){
+                var row = parseInt(this.id.split('-')[0]);
+                var col = parseInt(this.id.split('-')[1]);
+
+                if(row >= parseInt(size) - parseInt(roomSize) && row < parseInt(size) + parseInt(roomSize) &&
+                   col >= parseInt(size) - parseInt(roomSize) && col < parseInt(size) + parseInt(roomSize) ){
                     this.cacheX = 80;
                     this.cacheY = 32;
                 }
             }
-
-            var row = parseInt(this.id.split('-')[0]);
-            var col = parseInt(this.id.split('-')[1]);
         }
         fg.protoEntity.draw.call(this);
         

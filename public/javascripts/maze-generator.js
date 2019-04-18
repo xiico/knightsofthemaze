@@ -18,9 +18,9 @@ var colSize = 4;
 var rowSize = 4;
 var roomSize = 5;
 var count = 0;
-var size = 43;//39
+var size = 47;//39
 var seed = Math.random();
-var seeded = new Math.seedrandom(123);
+var seeded = new Math.seedrandom(seed);
 var lastRnd;
 function main(){    
     count++;
