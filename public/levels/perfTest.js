@@ -24,5 +24,10 @@ var perfTest = { tiles:
     "X X \n" +
     " X X",    
     srcs: [{ "F": "dungeon_floor.png", width: 96, height: 80 },
-           { "X": "dungeon_walls.png", width: 96, height: 96 }],
+           { "X": "dungeon_walls.png", width: 96, height: 96 },
+           { "A": "knight.png", width: 144, height: 64 }],
+    animations: [{entity: "A", name: "Idle", frames: [{x: 0, y: 0, width:16, height: 32},
+                                                      {x: 16, y: 0, width:16, height: 32},
+                                                      {x: 32, y: 0, width:16, height: 32},
+                                                      {x: 48, y: 0, width:16, height: 32}], interval: 100 }]
 }

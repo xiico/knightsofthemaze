@@ -237,6 +237,8 @@ fg.protoLevel = {
             this.warpDecks = window[this.name].warpDecks;
         if (window[this.name].srcs)
             this.srcs = window[this.name].srcs;
+        if (window[this.name].animations)
+            this.animations = window[this.name].animations;
     },
     getRowsFromMaze() {
         var rows = [];
@@ -411,6 +413,7 @@ fg.protoEntity = {
     height: fg.System.defaultSide,
     cacheWidth: fg.System.defaultSide,
     cacheHeight: fg.System.defaultSide,
+    animations: [],
     init: function (id, type, x, y, cx, cy, index) {
         this.type = type;
         this.id = id;
@@ -423,6 +426,7 @@ fg.protoEntity = {
         this.collidable = this.type != TYPE.TUNNEL && this.type != TYPE.DARKNESS && this.type != TYPE.SAVE;
         this.segments = [];
         this.backGround = true;
+        this.curAnimation = null;
         return this;
     },
     draw: function (foreGround) {
@@ -459,7 +463,36 @@ fg.protoEntity = {
         } else ctx.fillRect(0, 0, this.height, this.width);
         return c;
     },
+    playAnimation: function(name){
+        var animation = fg.Game.currentLevel.animations.find(a => a.name == name);
+        if(animation){
+            this.curAnimation = new fg.Animation(animation.name);        
+            this.curAnimation.frames = animation.frames
+            this.curAnimation.index = 0;
+        }
+    },
     update: function () { }
+}
+
+fg.Animation = function (name, frames=[], total = 4, interval = 100) {
+    var self = this;
+    self.getFrame = function() { 
+        if(self.totalFrameTime > self.total) self.reset();
+        return self.frames[Math.floor(self.totalFrameTime += self.interval)]; 
+    },
+    self.name = name, 
+    self.frames = frames,
+    self.total = total,
+    self.interval = 16.6666 / interval;
+    self.totalFrameTime = 0;
+    self.reset = function() {
+        self.index = 0;
+        self.totalFrameTime = 0;
+    };
+    self.update = function () {
+        var frame = this.getFrame();
+        return frame;
+     }
 }
 
 fg.Active =
@@ -2186,8 +2219,8 @@ fg.Actor = function (id, type, x, y, cx, cy, index) {
     var actor = Object.create(fg.protoEntity);
     actor = Object.assign(actor, fg.Active);
     actor.init(id, type, x, y, cx, cy, index);
-    actor.width = fg.System.defaultSide / 3;
-    actor.height = fg.System.defaultSide - 4;
+    actor.width = fg.System.defaultSide * .625; //* .625; // fg.System.defaultSide / 3;
+    actor.height = fg.System.defaultSide * .9375; //* .9375; //fg.System.defaultSide - 4;
     actor.color = "red";
     actor.canJump = true;
     actor.active = false;
@@ -2206,13 +2239,37 @@ fg.Actor = function (id, type, x, y, cx, cy, index) {
     actor.bounceness = 0;
     actor.searchDepth = 12;
     actor.drawTile = function (c, ctx) {
-        c.width = this.width * 2;
-        c.height = this.height;
-        ctx.fillStyle = this.color;
-        ctx.fillRect(0, 0, this.width, this.height);
-        ctx.fillStyle = "white";
-        ctx.fillRect(this.width, 0, this.width, this.height);
+        // c.width = this.width * 2;
+        // c.height = this.height;
+        // ctx.fillStyle = this.color;
+        // ctx.fillRect(0, 0, this.width, this.height);
+        // ctx.fillStyle = "white";
+        // ctx.fillRect(this.width, 0, this.width, this.height);
+        fg.protoEntity.drawTile.call(this, c,ctx);
         return c;
+    };
+    actor.draw = function (foreGround) {
+        // c.width = this.width * 2;
+        // c.height = this.height;
+        // ctx.fillStyle = this.color;
+        // ctx.fillRect(0, 0, this.width, this.height);
+        // ctx.fillStyle = "white";
+        // ctx.fillRect(this.width, 0, this.width, this.height);
+        var frame;
+        if (this.curAnimation) frame = this.curAnimation.update();
+        if (frame) {
+            this.cacheX = frame.x;
+            this.cacheY = frame.y;
+            this.cacheWidth = frame.width;
+            this.cacheHeight = frame.height;
+        } else {
+            this.cacheX = 0;
+            this.cacheY = 0;
+            this.cacheWidth = 16;
+            this.cacheHeight = 32;
+        }
+        fg.protoEntity.draw.call(this, foreGround);
+        return this;
     };
     actor.explode = function () {
         var divider = 4;
@@ -2282,9 +2339,13 @@ fg.Actor = function (id, type, x, y, cx, cy, index) {
             this.active = true;
             // this.soilFriction = 1;
             this.speedY = this.getAccelY(); // this.speedY + this.getAccelY() <= this.maxSpeedY ? this.speedY + this.getAccelY() : this.maxSpeedY;
+        } else {
+            if(!this.curAnimation || this.curAnimation.name != "Idle")
+                this.playAnimation("Idle")
         }
         this.vectors = undefined;
         fg.Active.update.call(this);
+        fg.protoEntity.update.call(this);
     };
     return actor;
 }
