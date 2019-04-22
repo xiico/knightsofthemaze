@@ -29,5 +29,9 @@ var perfTest = { tiles:
     animations: [{entity: "A", name: "Idle", frames: [{x: 0, y: 0, width:16, height: 32},
                                                       {x: 16, y: 0, width:16, height: 32},
                                                       {x: 32, y: 0, width:16, height: 32},
-                                                      {x: 48, y: 0, width:16, height: 32}], interval: 100 }]
+                                                      {x: 48, y: 0, width:16, height: 32}], interval: 100, faceOffSet: 32 },
+                 {entity: "A", name: "Run", frames: [{x:  64, y: 0, width:16, height: 32},
+                                                     {x:  80, y: 0, width:16, height: 32},
+                                                     {x:  96, y: 0, width:16, height: 32},
+                                                     {x: 112, y: 0, width:16, height: 32}], interval: 100, faceOffSet: 32 } ]
 }

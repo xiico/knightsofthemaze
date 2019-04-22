@@ -467,7 +467,7 @@ fg.protoEntity = {
     },
     playAnimation: function(name){
         var animation = fg.Game.currentLevel.animations.find(a => a.name == name);
-        if(animation){
+        if(animation && this.curAnimation == null || animation.name != this.curAnimation.name){
             this.curAnimation = new fg.Animation(animation);
         }
     },
@@ -476,10 +476,12 @@ fg.protoEntity = {
 
 fg.Animation = function (animation){//name, frames=[], total = 4, interval = 100) {
     var self = this;
-    self.getFrame = function() { 
+    self.getFrame = function(facingRight = true) { 
         self.curFrame = Math.floor(self.totalFrameTime += self.interval);
         if(self.totalFrameTime > self.total) self.reset();
-        return self.frames[self.curFrame]; 
+        var frame = self.frames[self.curFrame]
+        frame.y = facingRight ? 0 : animation.faceOffSet;
+        return frame; 
     },
     self.name = animation.name, 
     self.frames = animation.frames,
@@ -491,8 +493,8 @@ fg.Animation = function (animation){//name, frames=[], total = 4, interval = 100
         self.curFrame = 0;
         self.totalFrameTime = 0;
     };
-    self.update = function () {
-        var frame = this.getFrame();
+    self.update = function (facingRight = true) {
+        var frame = this.getFrame(facingRight);
         return frame;
      }
 }
@@ -2246,15 +2248,16 @@ fg.Actor = function (id, type, x, y, cx, cy, index) {
         return c;
     };
     actor.draw = function (foreGround) {
-        var fr = this.facingRight ? 0 : 32;
+        // var fr = this.facingRight ? 0 : 32;
         var frame;
-        if (this.curAnimation) frame = this.curAnimation.update();
-            var fr = this.facingRight ? 0 : 32;
+        if (this.curAnimation) frame = this.curAnimation.update(actor.facingRight);
+            // var fr = this.facingRight ? 0 : 32;
         if (frame) {
             this.cacheOffSetX = -3;
             this.cacheOffSetY = -17;
             this.cacheX = frame.x;
-            this.cacheY = frame.y + fr;
+            // this.cacheY = frame.y + fr;
+            this.cacheY = frame.y;
             this.cacheWidth = frame.width;
             this.cacheHeight = frame.height;
         } else {
@@ -2323,23 +2326,28 @@ fg.Actor = function (id, type, x, y, cx, cy, index) {
             // this.soilFriction = 1;
             this.facingRight = false;
             this.speedX = -this.getAccelX(); // this.speedX - this.getAccelX() >= -this.maxSpeedX ? this.speedX - this.getAccelX() : -this.maxSpeedX;
-        } if (fg.Input.actions["right"]) {
+        } else if (fg.Input.actions["right"]) {
             this.active = true;
             // this.soilFriction = 1;
             this.facingRight = true;
             this.speedX = this.getAccelX(); // this.speedX + this.getAccelX() <= this.maxSpeedX ? this.speedX + this.getAccelX() : this.maxSpeedX;
-        } if (fg.Input.actions["up"]) {
+        } 
+        if (fg.Input.actions["up"]) {
             this.active = true;
             // this.soilFriction = 1;
             this.speedY = -this.getAccelY(); // this.speedY - this.getAccelY() >= -this.maxSpeedY ? this.speedY - this.getAccelY() : -this.maxSpeedY;
-        } if (fg.Input.actions["down"]) {
+        } else if (fg.Input.actions["down"]) {
             this.active = true;
             // this.soilFriction = 1;
             this.speedY = this.getAccelY(); // this.speedY + this.getAccelY() <= this.maxSpeedY ? this.speedY + this.getAccelY() : this.maxSpeedY;
-        } else {
-            if(!this.curAnimation || this.curAnimation.name != "Idle")
-                this.playAnimation("Idle")
-        }
+        } 
+
+        
+        if(!Object.keys(fg.Input.actions).length)
+            this.playAnimation("Idle");
+        else 
+            this.playAnimation("Run");
+        
         this.vectors = undefined;
         fg.Active.update.call(this);
         fg.protoEntity.update.call(this);
