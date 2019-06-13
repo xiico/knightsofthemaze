@@ -1,3 +1,4 @@
+require('dotenv').config({path: __dirname + '/.env'});
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -21,6 +22,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+
+
+// mongoDB (Atlas) configuration ===============================================================
+var mongoose = require('mongoose');
+var configDB = require('./config/database.js');
+mongoose.connect(configDB.url, { useNewUrlParser: true }); // connect to database
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
