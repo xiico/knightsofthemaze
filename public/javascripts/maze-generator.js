@@ -18,7 +18,7 @@ var colSize = 4;
 var rowSize = 4;
 var roomSize = 5;
 var count = 0;
-var size = 47;//39
+// var size = 47;//39
 var seed = Math.random();
 var seeded = new Math.seedrandom(seed);
 var lastRnd;
@@ -52,11 +52,11 @@ function main(){
     requestAnimationFrame(main);
 }
 
-var maze = maze();
+// var maze = Maze();
 
-function maze(width=size, height=size, complexity=.75, density=.75) {
+function Maze(size=47, width=47, height=47, complexity=.45, density=.45) {// complexity=.75, density=.75) {
     // Only odd shapes
-    this.shape  = [parseInt(height / 2) * 2 + 1, parseInt(width / 2) * 2 + 1];
+    this.shape  = [parseInt(size / 2) * 2 + 1, parseInt(size / 2) * 2 + 1];
     // Adjust complexity and density relative to maze size
     this.complexity = parseInt(complexity * (5 * (shape[0] + shape[1]))); // number of components
     this.density    = parseInt(density * (parseInt(shape[0] / 2) * parseInt(shape[1] / 2))); // size of components
@@ -65,12 +65,12 @@ function maze(width=size, height=size, complexity=.75, density=.75) {
     Z = matrix(shape)
 
     // Make aisles
-    if(!useMaze2) buildIsles(this.density, this.shape, this.complexity, width, height);
+    if(!useMaze2) buildIsles(this.density, this.shape, this.complexity, size, width, height);
 
     return Z;
 }
 
-function buildIsles(density, shape, complexity, width, height) {
+function buildIsles(density, shape, complexity, size, width, height) {
     for (let i of new Array(density)) {
         var x = rand(1, parseInt(shape[1] / 2)) * 2, y = rand(1, parseInt(shape[0] / 2)) * 2; // pick a random position
         Z[y][x] = !!1;
@@ -88,9 +88,10 @@ function buildIsles(density, shape, complexity, width, height) {
                 var index = rand(0, neighbours.length)
                 var ng = neighbours[index];
                 y_ = ng[0], x_ = ng[1];
-                if (Z[y_][x_] == !!0) {
-                    Z[y_][x_] = !!1;
-                    Z[y_ + parseInt((y - y_) / 2)][x_ + parseInt((x - x_) / 2)] = !!1;
+                // if (Z[y_][x_] == !!0) {
+                    if (!Z[y_][x_]) {                    
+                        Z[y_][x_] = true;
+                        Z[y_ + parseInt((y - y_) / 2)][x_ + parseInt((x - x_) / 2)] = true;
                     if(useMaze2) {                    
                         ctx.fillRect(x_ * 2, y_ * 2, 2, 2);
                         ctx.fillRect((x_ + parseInt((x - x_) / 2)) * 2, (y_ + parseInt((y - y_) / 2)) * 2, 2, 2)
@@ -102,7 +103,7 @@ function buildIsles(density, shape, complexity, width, height) {
         }
     }
 
-    createRoom(Z, parseInt(width / 2) - parseInt(roomSize / 2) , parseInt(height / 2) - parseInt(roomSize / 2) , roomSize, roomSize);
+    createRoom(Z, parseInt(size / 2) - parseInt(roomSize / 2) , parseInt(size / 2) - parseInt(roomSize / 2) , roomSize, roomSize);
 }
 
 function matrix(shape) {
@@ -117,7 +118,8 @@ function matrix(shape) {
 
 function rand(min, max) {
     lastRnd = seeded();
-    return parseInt(lastRnd * (max - min) + min);
+    result = parseInt(lastRnd * (max - min) + min);
+    return result <= max ? result : 0;;
 }
 
 function createRoom(Z = [], startx = 3, starty = 3, width = 3, height = 3){
@@ -131,7 +133,7 @@ function createRoom(Z = [], startx = 3, starty = 3, width = 3, height = 3){
 }
 
 
-function buildIsles2(density, shape, complexity, width=size, height=size){
+function buildIsles2(density, shape, complexity, width=47, height=47){
     if (iDensity < density && !iComplexity) {
         x = rand(1, parseInt(shape[1] / 2)) * 2, y = rand(1, parseInt(shape[0] / 2)) * 2; // pick a random position
         Z[y][x] = !!1;
@@ -155,9 +157,10 @@ function buildIsles2(density, shape, complexity, width=size, height=size){
                 while(idx >= neighbours.length) idx = rand(0, neighbours.length)
                 var ng = neighbours[idx];
                 y_ = ng[0], x_ = ng[1];
-                if (Z[y_][x_] == !!0) {
-                    Z[y_][x_] = !!1;
-                    Z[y_ + parseInt((y - y_) / 2)][x_ + parseInt((x - x_) / 2)] = !!1;
+                // if (Z[y_][x_] == !!0) {
+                if (!Z[y_][x_]) {                    
+                    Z[y_][x_] = true;
+                    Z[y_ + parseInt((y - y_) / 2)][x_ + parseInt((x - x_) / 2)] = true;
                     result = [[y_,x_], [y_ + parseInt((y - y_) / 2),x_ + parseInt((x - x_) / 2)]];
                     x = x_;
                     y = y_;

@@ -190,8 +190,12 @@ fg.Camera = {
     dampY: 0,
     dampRatio: 0.96,
     position: 0,
-    init: function () {
-        if (this.following) {
+    init: function (position) {
+        if(position) {
+            fg.Game.screenOffsetX = position.x;
+            fg.Game.screenOffsetY = position.y;
+        }
+        else if (this.following) {
             fg.Game.screenOffsetX = this.following.x;
             fg.Game.screenOffsetY = this.following.y;
         }
@@ -226,6 +230,7 @@ fg.protoLevel = {
     loaded: false,
     height: 0,
     width: 0,
+    maze: null,
     loadSettings: function () {
         if (window[this.name].levelSwiches)
             this.levelSwiches = window[this.name].levelSwiches;
@@ -239,11 +244,15 @@ fg.protoLevel = {
             this.srcs = window[this.name].srcs;
         if (window[this.name].animations)
             this.animations = window[this.name].animations;
+        if (window[this.name].startPositions)
+            this.startPositions = window[this.name].startPositions;
+        if (window[this.name].size)
+            this.size = window[this.name].size;
     },
     getRowsFromMaze() {
         var rows = [];
-        
-        for (let line of maze) {
+        if (!this.maze) this.maze = Maze(fg.Game.currentLevel.size);
+        for (let line of this.maze) {
             rows[rows.length] = "";
             for (let cell of line) {
                 if(cell) rows[rows.length - 1] += "XX";
@@ -261,8 +270,8 @@ fg.protoLevel = {
     },
     createEntities: function () {
         var rows;
-        if (maze) rows = this.getRowsFromMaze();
-        else rows = window[this.name].tiles.split('\n');
+        rows = this.getRowsFromMaze();
+        
         for (var i = 0, row; row = rows[i]; i++) {
             if (!this.entities[i]) this.entities[i] = [];
             for (var k = 0, col; col = row[k]; k++) {
@@ -282,6 +291,8 @@ fg.protoLevel = {
                 }
             }
         }
+        fg.Game.actors[0].canJump = true;
+        fg.Game.actors[0].position = fg.Game.currentLevel.startPositions[rand(0,fg.Game.currentLevel.startPositions.length)];
         this.loadLevelCompleted()
     },
     applySettingsToEntity: function (entity) {
@@ -417,6 +428,7 @@ fg.protoEntity = {
     cacheOffSetY: 0,
     animations: [],
     init: function (id, type, x, y, cx, cy, index) {
+        let self = this;
         this.type = type;
         this.id = id;
         this.color = "black";
@@ -471,7 +483,17 @@ fg.protoEntity = {
             this.curAnimation = new fg.Animation(animation);
         }
     },
-    update: function () { }
+    update: function () { },
+    get position() {
+        return {
+            x: this.x,
+            y: this.y
+        }
+    },
+    set position(p) {
+        this.x = p.x || this.x;
+        this.y = p.y || this.y;
+    }
 }
 
 fg.Animation = function (animation){//name, frames=[], total = 4, interval = 100) {
@@ -989,10 +1011,21 @@ fg.Wall = function (id, type, x, y, cx, cy, index) {
             if (bottomBottomLine) bottomBottom = bottomBottomLine[parseInt(this.id.split('-')[1])];
             if (bottomBottomLine) bottomBottomLeft = bottomBottomLine[parseInt(this.id.split('-')[1]) - 1];
             if (bottomBottomLine) bottomBottomRight = bottomBottomLine[parseInt(this.id.split('-')[1]) + 1];
-            if((!left || ((left.type == "F" && bottomLeft && bottomLeft.type == TYPE.FLOOR) && bottom && bottom.type == "X" && bottomBottom && bottomBottom.type == "X" ) )) {
+            if (!bottomBottom && bottomLine) {
+                if (!right) {
+                    this.cacheX = 32;
+                    this.cacheY = 16;            
+                } else if (!left) {
+                    this.cacheX = 0;
+                    this.cacheY = 16;    
+                } else {
+                    this.cacheX = 16;
+                    this.cacheY = 16;  
+                }
+            } else if(((!left && bottomLine) || ((left && left.type == "F" && bottomLeft && bottomLeft.type == TYPE.FLOOR) && bottom && bottom.type == "X" && bottomBottom && bottomBottom.type == "X" ) )) {
                 this.cacheX = 0;
                 this.cacheY = 0;
-            } else if((!right || ((right.type == "F" && bottomRight && bottomRight.type == TYPE.FLOOR) && bottom && bottom.type == "X" && bottomBottom && bottomBottom.type == "X" ))) {
+            } else if(((!right && bottomLine) || ((right && right.type == "F" && bottomRight && bottomRight.type == TYPE.FLOOR) && bottom && bottom.type == "X" && bottomBottom && bottomBottom.type == "X" ))) {
                 this.cacheX = 32;
                 this.cacheY = 0;
             } else if (left && left.type == "F" && bottom && bottom.type == "X" && bottomBottom && bottomBottom.type == "F") {
@@ -2204,7 +2237,7 @@ fg.Floor = function (id, type, x, y, cx, cy, index) {
 
                 var row = parseInt(this.id.split('-')[0]);
                 var col = parseInt(this.id.split('-')[1]);
-
+                let size = fg.Game.currentLevel.size;
                 if(row >= parseInt(size) - parseInt(roomSize) && row < parseInt(size) + parseInt(roomSize) &&
                    col >= parseInt(size) - parseInt(roomSize) && col < parseInt(size) + parseInt(roomSize) ){
                     this.cacheX = 80;
@@ -2317,7 +2350,10 @@ fg.Actor = function (id, type, x, y, cx, cy, index) {
         this.speedY = 0;
         if (fg.Input.actions["jump"]) {
             if (this.canJump) {
-
+                this.canJump = false;
+                fg.Game.currentLevel.maze = Maze(fg.Game.currentLevel.size);
+                fg.Game.currentLevel.createEntities();
+                this.playAnimation("Jump");
             }
         }
         this.active = false;
@@ -2346,7 +2382,10 @@ fg.Actor = function (id, type, x, y, cx, cy, index) {
         if(!Object.keys(fg.Input.actions).length)
             this.playAnimation("Idle");
         else 
-            this.playAnimation("Run");
+        {
+            if((fg.Input.actions["up"] || fg.Input.actions["down"] || fg.Input.actions["left"] || fg.Input.actions["right"]) && !fg.Input.actions["jump"]) this.playAnimation("Run");
+        }
+            
         
         this.vectors = undefined;
         fg.Active.update.call(this);
@@ -2397,13 +2436,13 @@ fg.Game =
         start: function () {
             fg.System.init();
             fg.UI.init();
-            if (fg.Game.actors.length == 0) {
+            if (fg.Game.actors.length == 0) {                
                 fg.Game.actors[0] = fg.Entity("A-A", TYPE.ACTOR, fg.System.defaultSide * 2, fg.System.defaultSide * 2, 0, 0, 0);//17,12|181,54|6,167|17,11|437,61|99,47|98,8|244,51|61,57
             }
             this.loadState();
             fg.Camera.follow(fg.Game.actors[0]);
             fg.Camera.init();
-            this.currentLevel = this.loadLevel("perfTest");
+            this.currentLevel = this.loadLevel("levelOne");
             fg.Input.initKeyboard();
             fg.Input.bind(fg.Input.KEY.SPACE, "jump");
             fg.Input.bind(fg.Input.KEY.LEFT_ARROW, "left");

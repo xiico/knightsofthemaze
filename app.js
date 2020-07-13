@@ -27,7 +27,7 @@ app.use('/users', usersRouter);
 // mongoDB (Atlas) configuration ===============================================================
 var mongoose = require('mongoose');
 var configDB = require('./config/database.js');
-mongoose.connect(configDB.url, { useNewUrlParser: true }); // connect to database
+mongoose.connect(configDB.url, { useNewUrlParser: true, useUnifiedTopology: true }); // connect to database
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
