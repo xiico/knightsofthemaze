@@ -189,7 +189,7 @@ fg.Camera = {
     dampX: 0,
     dampY: 0,
     dampRatio: 0.96,
-    position: 0,
+    position: null,
     init: function (position) {
         if(position) {
             fg.Game.screenOffsetX = position.x;
@@ -203,20 +203,33 @@ fg.Camera = {
     follow: function (obj) {
         this.following = obj;
     },
-    moveTo: function (position) { },
+    moveTo: function (position) {
+        this.position = position;
+     },
     update: function () {
-        if (!this.following) return;
+        if (this.following) {
+            this.dampX = ((this.following.x - fg.Game.screenOffsetX) - ((fg.System.canvas.width / 2) - (this.following.width / 2))) - (Math.abs(this.following.speedX) >= this.following.maxSpeedX * 0.9 ? this.following.speedX * fg.Timer.deltaTime * 2 : 0);
+            this.dampY = ((this.following.y - fg.Game.screenOffsetY) - ((fg.System.canvas.height / 2) - (this.following.height / 2)));
 
-        this.dampX = ((this.following.x - fg.Game.screenOffsetX) - ((fg.System.canvas.width / 2) - (this.following.width / 2))) - (Math.abs(this.following.speedX) >= this.following.maxSpeedX * 0.9 ? this.following.speedX * fg.Timer.deltaTime * 2 : 0);
-        this.dampY = ((this.following.y - fg.Game.screenOffsetY) - ((fg.System.canvas.height / 2) - (this.following.height / 2)));
+            if (Math.abs(this.dampX) > 0.1) this.dampX *= this.dampRatio;
+            if (Math.abs(this.dampY) > 0.1) this.dampY *= this.dampRatio;
 
-        if (Math.abs(this.dampX) > 0.1) this.dampX *= this.dampRatio;
-        if (Math.abs(this.dampY) > 0.1) this.dampY *= this.dampRatio;
+            var posX = Math.min(Math.max(((this.following.x) + (this.following.width / 2) - (fg.System.canvas.width / 2)) - this.dampX, 0), fg.Game.currentLevel.width - fg.System.canvas.width);
+            var posY = Math.min(Math.max(((this.following.y - this.dampY) + (this.following.height / 2) - (fg.System.canvas.height / 2)), 0), fg.Game.currentLevel.height - fg.System.canvas.height);
+            fg.Game.screenOffsetX = Math.round(posX);// this.following.speedX >= 0 ? Math.floor(posX) : Math.ceil(posX);
+            fg.Game.screenOffsetY = Math.round(posY);//this.following.speedY <= 0 ? Math.ceil(posY) : Math.round(posY) ;
+        } else if (this.position) {
+            this.dampX = ((this.position.x - fg.Game.screenOffsetX) - ((fg.System.canvas.width / 2))) - (Math.abs(0) >= 0 * 0.9 ? 0 * fg.Timer.deltaTime * 2 : 0);
+            this.dampY = ((this.position.y - fg.Game.screenOffsetY) - ((fg.System.canvas.height / 2)));
 
-        var posX = Math.min(Math.max(((this.following.x) + (this.following.width / 2) - (fg.System.canvas.width / 2)) - this.dampX, 0), fg.Game.currentLevel.width - fg.System.canvas.width);
-        var posY = Math.min(Math.max(((this.following.y - this.dampY) + (this.following.height / 2) - (fg.System.canvas.height / 2)), 0), fg.Game.currentLevel.height - fg.System.canvas.height);
-        fg.Game.screenOffsetX = Math.round(posX);// this.following.speedX >= 0 ? Math.floor(posX) : Math.ceil(posX);
-        fg.Game.screenOffsetY = Math.round(posY);//this.following.speedY <= 0 ? Math.ceil(posY) : Math.round(posY) ;
+            if (Math.abs(this.dampX) > 0.1) this.dampX *= this.dampRatio;
+            if (Math.abs(this.dampY) > 0.1) this.dampY *= this.dampRatio;
+
+            var posX = Math.min(Math.max(((this.position.x) + 0 - (fg.System.canvas.width / 2)) - this.dampX, 0), fg.Game.currentLevel.width - fg.System.canvas.width);
+            var posY = Math.min(Math.max(((this.position.y - this.dampY) + 0 - (fg.System.canvas.height / 2)), 0), fg.Game.currentLevel.height - fg.System.canvas.height);
+            fg.Game.screenOffsetX = Math.round(posX);// this.following.speedX >= 0 ? Math.floor(posX) : Math.ceil(posX);
+            fg.Game.screenOffsetY = Math.round(posY);//this.following.speedY <= 0 ? Math.ceil(posY) : Math.round(posY) ;
+        }
 
         this.left = fg.Game.screenOffsetX;
         this.top = fg.Game.screenOffsetY;
@@ -483,6 +496,26 @@ fg.protoEntity = {
             this.curAnimation = new fg.Animation(animation);
         }
     },
+    updateAnimationCache: function() {
+        var frame;
+        if (this.curAnimation) frame = this.curAnimation.update(this.facingRight);
+        if (frame) {
+            if (this.cacheOffSetX || this.cacheOffSetY) {
+                this.cacheOffSetX = -3;
+                this.cacheOffSetY = -17;
+            }
+            this.cacheX = frame.x;
+            // this.cacheY = frame.y + fr;
+            this.cacheY = frame.y;
+            this.cacheWidth = frame.width;
+            this.cacheHeight = frame.height;
+        } else {
+            this.cacheX = 0;
+            this.cacheY = 0;
+            this.cacheWidth = 16;
+            this.cacheHeight = 32;
+        }
+    },
     update: function () { },
     get position() {
         return {
@@ -502,7 +535,7 @@ fg.Animation = function (animation){//name, frames=[], total = 4, interval = 100
         self.curFrame = Math.floor(self.totalFrameTime += self.interval);
         if(self.totalFrameTime > self.total) self.reset();
         var frame = self.frames[self.curFrame]
-        frame.y = facingRight ? 0 : animation.faceOffSet;
+        if(animation.faceOffSet) frame.y = facingRight ? 0 : animation.faceOffSet;
         return frame; 
     },
     self.name = animation.name, 
@@ -1056,14 +1089,27 @@ fg.Wall = function (id, type, x, y, cx, cy, index) {
                 this.cacheX = 64;
                 this.cacheY = 0;
             } else {
-                var index = rand(0,11);
-                this.cacheX = this.tiles[index].x;
-                this.cacheY = this.tiles[index].y;
+                var fountain = rand(0,60);
+                if(fountain == 20 || fountain == 40) {
+                    this.animationName = fountain == 20 ? 'LFA' : 'LFB';
+                    let floor = fg.Game.currentLevel.entities[parseInt(this.id.split('-')[0]) + 1]?.[this.id.split('-')[1]];
+                    if (floor) floor.animationName = this.animationName === 'LFA' ? 'WLFA' : 'WLFB'
+                } else {
+                    var index = rand(0,11);
+                    this.cacheX = this.tiles[index].x;
+                    this.cacheY = this.tiles[index].y;
+                }
             }
             this.cacheWidth = 16;
             this.cacheHeight = 16;
         }
+        if (this.animationName) this.updateAnimationCache();
         fg.protoEntity.draw.call(this);        
+    };
+    
+    wall.update = function () {
+        if (this.animationName) this.playAnimation(this.animationName);
+        fg.protoEntity.update.call(this);
     }
     return wall;
 }
@@ -2229,7 +2275,8 @@ fg.Floor = function (id, type, x, y, cx, cy, index) {
                     this.cacheY = 64;
                 }
             } else {
-                var index = rand(0,8);
+                let tileIndex = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,3,4,5,6,7];
+                var index = tileIndex[rand(0,tileIndex.length)];
                 this.cacheX = floor.tiles[index].x;
                 this.cacheY = floor.tiles[index].y;
                 this.cacheWidth = 16;
@@ -2245,8 +2292,14 @@ fg.Floor = function (id, type, x, y, cx, cy, index) {
                 }
             }
         }
+        if (this.animationName) this.updateAnimationCache();
         fg.protoEntity.draw.call(this);
         
+    }
+    
+    floor.update = function () {
+        if (this.animationName) this.playAnimation(this.animationName);
+        fg.protoEntity.update.call(this);
     }
     fg.Game.currentLevel.applySettingsToEntity(floor);
     return floor;
@@ -2266,7 +2319,8 @@ fg.Actor = function (id, type, x, y, cx, cy, index) {
     //powerUps
     actor.glove = false;
     actor.wallJump = true;
-
+    actor.cacheOffSetX = -3;
+    actor.cacheOffSetY = -17;
     actor.wallSlideSpeed = 0.082;
     actor.wallSliding = false;
     actor.segments = [];
@@ -2282,23 +2336,24 @@ fg.Actor = function (id, type, x, y, cx, cy, index) {
     };
     actor.draw = function (foreGround) {
         // var fr = this.facingRight ? 0 : 32;
-        var frame;
-        if (this.curAnimation) frame = this.curAnimation.update(actor.facingRight);
+        // var frame;
+        // if (this.curAnimation) frame = this.curAnimation.update(actor.facingRight);
             // var fr = this.facingRight ? 0 : 32;
-        if (frame) {
-            this.cacheOffSetX = -3;
-            this.cacheOffSetY = -17;
-            this.cacheX = frame.x;
-            // this.cacheY = frame.y + fr;
-            this.cacheY = frame.y;
-            this.cacheWidth = frame.width;
-            this.cacheHeight = frame.height;
-        } else {
-            this.cacheX = 0;
-            this.cacheY = 0;
-            this.cacheWidth = 16;
-            this.cacheHeight = 32;
-        }
+        // if (frame) {
+        //     this.cacheOffSetX = -3;
+        //     this.cacheOffSetY = -17;
+        //     this.cacheX = frame.x;
+        //     // this.cacheY = frame.y + fr;
+        //     this.cacheY = frame.y;
+        //     this.cacheWidth = frame.width;
+        //     this.cacheHeight = frame.height;
+        // } else {
+        //     this.cacheX = 0;
+        //     this.cacheY = 0;
+        //     this.cacheWidth = 16;
+        //     this.cacheHeight = 32;
+        // }
+        this.updateAnimationCache();
         fg.protoEntity.draw.call(this, foreGround);
         return this;
     };

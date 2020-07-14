@@ -27,6 +27,34 @@ var levelOne = {
             { x: 128, y: 0, width: 16, height: 32 },
             { x: 128, y: 0, width: 16, height: 32 }
         ], interval: 100, faceOffSet: 32
+    },
+    {
+        entity: "X", name: "LFA", frames: [
+            { x: 48, y: 48, width: 16, height: 16 },
+            { x: 64, y: 48, width: 16, height: 16 },
+            { x: 80, y: 48, width: 16, height: 16 }
+        ], interval: 100
+    },
+    {
+        entity: "X", name: "LFB", frames: [
+            { x: 48, y: 80, width: 16, height: 16 },
+            { x: 64, y: 80, width: 16, height: 16 },
+            { x: 80, y: 80, width: 16, height: 16 }
+        ], interval: 100
+    },
+    {
+        entity: "F", name: "WLFA", frames: [
+            { x: 48, y: 16, width: 16, height: 16 },
+            { x: 64, y: 16, width: 16, height: 16 },
+            { x: 80, y: 16, width: 16, height: 16 }
+        ], interval: 100
+    },
+    {
+        entity: "F", name: "WLFB", frames: [
+            { x: 48, y: 00, width: 16, height: 16 },
+            { x: 64, y: 00, width: 16, height: 16 },
+            { x: 80, y: 00, width: 16, height: 16 }
+        ], interval: 100
     }],
     startPositions: [
         { x: 02 * 16, y: 02 * 16 },

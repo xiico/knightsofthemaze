@@ -54,7 +54,7 @@ function main(){
 
 // var maze = Maze();
 
-function Maze(size=47, width=47, height=47, complexity=.45, density=.45) {// complexity=.75, density=.75) {
+function Maze(size=47, width=47, height=47, complexity=.20, density=.20) {// complexity=.75, density=.75) {
     // Only odd shapes
     this.shape  = [parseInt(size / 2) * 2 + 1, parseInt(size / 2) * 2 + 1];
     // Adjust complexity and density relative to maze size
