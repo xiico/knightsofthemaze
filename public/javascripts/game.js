@@ -190,6 +190,8 @@ fg.Camera = {
     dampY: 0,
     dampRatio: 0.96,
     position: null,
+    dampRate: 0.85,
+    dampThreshold: 2,//4.5,
     init: function (position) {
         if(position) {
             fg.Game.screenOffsetX = position.x;
@@ -208,25 +210,25 @@ fg.Camera = {
      },
     update: function () {
         if (this.following) {
-            this.dampX = ((this.following.x - fg.Game.screenOffsetX) - ((fg.System.canvas.width / 2) - (this.following.width / 2))) - (Math.abs(this.following.speedX) >= this.following.maxSpeedX * 0.9 ? this.following.speedX * fg.Timer.deltaTime * 2 : 0);
+            this.dampX = ((this.following.x - fg.Game.screenOffsetX) - ((fg.System.canvas.width  / 2) - (this.following.width  / 2)));// - (Math.abs(this.following.speedX) >= this.following.maxSpeedX * 0.9 ? this.following.speedX * fg.Timer.deltaTime * 2 : 0);
             this.dampY = ((this.following.y - fg.Game.screenOffsetY) - ((fg.System.canvas.height / 2) - (this.following.height / 2)));
 
             if (Math.abs(this.dampX) > 0.1) this.dampX *= this.dampRatio;
             if (Math.abs(this.dampY) > 0.1) this.dampY *= this.dampRatio;
 
             var posX = Math.min(Math.max(((this.following.x) + (this.following.width / 2) - (fg.System.canvas.width / 2)) - this.dampX, 0), fg.Game.currentLevel.width - fg.System.canvas.width);
-            var posY = Math.min(Math.max(((this.following.y - this.dampY) + (this.following.height / 2) - (fg.System.canvas.height / 2)), 0), fg.Game.currentLevel.height - fg.System.canvas.height);
+            var posY = Math.min(Math.max(((this.following.y) + (this.following.height / 2) - (fg.System.canvas.height / 2)) - this.dampY, 0), fg.Game.currentLevel.height - fg.System.canvas.height);
             fg.Game.screenOffsetX = Math.round(posX);// this.following.speedX >= 0 ? Math.floor(posX) : Math.ceil(posX);
             fg.Game.screenOffsetY = Math.round(posY);//this.following.speedY <= 0 ? Math.ceil(posY) : Math.round(posY) ;
         } else if (this.position) {
-            this.dampX = ((this.position.x - fg.Game.screenOffsetX) - ((fg.System.canvas.width / 2))) - (Math.abs(0) >= 0 * 0.9 ? 0 * fg.Timer.deltaTime * 2 : 0);
+            this.dampX = ((this.position.x - fg.Game.screenOffsetX) - ((fg.System.canvas.width  / 2))); // - (Math.abs(0) >= 0 * 0.9 ? 0 * fg.Timer.deltaTime * 2 : 0);
             this.dampY = ((this.position.y - fg.Game.screenOffsetY) - ((fg.System.canvas.height / 2)));
 
-            if (Math.abs(this.dampX) > 0.1) this.dampX *= this.dampRatio;
-            if (Math.abs(this.dampY) > 0.1) this.dampY *= this.dampRatio;
+            if (Math.abs(this.dampX) > 0.1) this.dampX *= Math.abs(this.dampX) * this.dampRate > this.dampThreshold ? this.dampRate : 0;// this.dampRatio;
+            if (Math.abs(this.dampY) > 0.1) this.dampY *= Math.abs(this.dampY) * this.dampRate > this.dampThreshold ? this.dampRate : 0;// this.dampRatio;
 
-            var posX = Math.min(Math.max(((this.position.x) + 0 - (fg.System.canvas.width / 2)) - this.dampX, 0), fg.Game.currentLevel.width - fg.System.canvas.width);
-            var posY = Math.min(Math.max(((this.position.y - this.dampY) + 0 - (fg.System.canvas.height / 2)), 0), fg.Game.currentLevel.height - fg.System.canvas.height);
+            var posX = Math.min(Math.max(((this.position.x) - (fg.System.canvas.width / 2)) - this.dampX, 0), fg.Game.currentLevel.width - fg.System.canvas.width);
+            var posY = Math.min(Math.max(((this.position.y) - (fg.System.canvas.height / 2)) - this.dampY, 0), fg.Game.currentLevel.height - fg.System.canvas.height);
             fg.Game.screenOffsetX = Math.round(posX);// this.following.speedX >= 0 ? Math.floor(posX) : Math.ceil(posX);
             fg.Game.screenOffsetY = Math.round(posY);//this.following.speedY <= 0 ? Math.ceil(posY) : Math.round(posY) ;
         }
@@ -235,6 +237,18 @@ fg.Camera = {
         this.top = fg.Game.screenOffsetY;
         this.right = fg.Game.screenOffsetX + fg.System.canvas.width;
         this.bottom = fg.Game.screenOffsetY + fg.System.canvas.height;
+    },
+    get column() {
+        return (this.left + (canvas.width / 2)) / fg.Game.defaultSide;
+    },
+    get row() {
+        return (this.top + (canvas.height / 2)) / fg.Game.defaultSide;
+    },
+    get center() {
+        return {
+            x: this.left + (canvas.width / 2),
+            y: this.top + (canvas.height / 2)
+        }
     }
 }
 
@@ -244,6 +258,7 @@ fg.protoLevel = {
     height: 0,
     width: 0,
     maze: null,
+    seed: undefined,
     loadSettings: function () {
         if (window[this.name].levelSwiches)
             this.levelSwiches = window[this.name].levelSwiches;
@@ -264,7 +279,7 @@ fg.protoLevel = {
     },
     getRowsFromMaze() {
         var rows = [];
-        if (!this.maze) this.maze = Maze(fg.Game.currentLevel.size);
+        if (!this.maze) this.maze = Maze(fg.Game.currentLevel.size, undefined, undefined, undefined, undefined, this.seed);
         for (let line of this.maze) {
             rows[rows.length] = "";
             for (let cell of line) {
@@ -350,13 +365,21 @@ fg.protoLevel = {
         this.loaded = true;
         this.height = this.entities.length * fg.System.defaultSide;
         this.width = this.entities[0].length * fg.System.defaultSide;
-        while (this.marioBuffer.length > 0) {
-            this.marioBuffer[this.marioBuffer.length - 1].setSubTiles();
-            if (fg.Render.marioCache[this.marioBuffer[this.marioBuffer.length - 1].tileSet] == null) fg.Render.marioCache[this.marioBuffer[this.marioBuffer.length - 1].tileSet] = Object.keys(fg.Render.marioCache).length * fg.System.defaultSide;
-            //this.marioBuffer[this.marioBuffer.length - 1].cacheX = fg.Render.marioCache[this.marioBuffer[this.marioBuffer.length - 1].tileSet];
-            this.marioBuffer[this.marioBuffer.length - 1].cacheX = fg.Render.marioCache[this.marioBuffer[this.marioBuffer.length - 1].tileSet] % (fg.System.defaultSide * 10);
-            this.marioBuffer[this.marioBuffer.length - 1].cacheY = Math.floor(fg.Render.marioCache[this.marioBuffer[this.marioBuffer.length - 1].tileSet] / (fg.System.defaultSide * 10)) * fg.System.defaultSide;
-            this.marioBuffer.pop();
+        // while (this.marioBuffer.length > 0) {
+        //     this.marioBuffer[this.marioBuffer.length - 1].setSubTiles();
+        //     if (fg.Render.marioCache[this.marioBuffer[this.marioBuffer.length - 1].tileSet] == null) fg.Render.marioCache[this.marioBuffer[this.marioBuffer.length - 1].tileSet] = Object.keys(fg.Render.marioCache).length * fg.System.defaultSide;
+        //     //this.marioBuffer[this.marioBuffer.length - 1].cacheX = fg.Render.marioCache[this.marioBuffer[this.marioBuffer.length - 1].tileSet];
+        //     this.marioBuffer[this.marioBuffer.length - 1].cacheX = fg.Render.marioCache[this.marioBuffer[this.marioBuffer.length - 1].tileSet] % (fg.System.defaultSide * 10);
+        //     this.marioBuffer[this.marioBuffer.length - 1].cacheY = Math.floor(fg.Render.marioCache[this.marioBuffer[this.marioBuffer.length - 1].tileSet] / (fg.System.defaultSide * 10)) * fg.System.defaultSide;
+        //     this.marioBuffer.pop();
+        // }
+        let size = fg.Game.currentLevel.size * fg.System.defaultSide
+        let defaultSide = fg.System.defaultSide
+        this.mainRoom = {
+            x: size - (roomSize * defaultSide),
+            y: size - (roomSize * defaultSide),
+            width: roomSize * defaultSide * 2,
+            height: roomSize * defaultSide * 2
         }
     },
     init: function (name) {
@@ -502,7 +525,7 @@ fg.protoEntity = {
         if (frame) {
             if (this.cacheOffSetX || this.cacheOffSetY) {
                 this.cacheOffSetX = -3;
-                this.cacheOffSetY = -17;
+                this.cacheOffSetY = -26; // -17;
             }
             this.cacheX = frame.x;
             // this.cacheY = frame.y + fr;
@@ -526,6 +549,12 @@ fg.protoEntity = {
     set position(p) {
         this.x = p.x || this.x;
         this.y = p.y || this.y;
+    },
+    get row() {
+        return Math.round(this.x / fg.System.defaultSide);
+    },
+    get column() {
+        return Math.round(this.y / fg.System.defaultSide);
     }
 }
 
@@ -980,51 +1009,6 @@ fg.Wall = function (id, type, x, y, cx, cy, index) {
                   {x:0 ,y:64},{x:16,y:64},{x:32,y:64},
                   {x:0 ,y:80},{x:16,y:80},{x:32,y:80}]
     wall.cacheX = -1;
-    // fg.Game.currentLevel.applyFeaturesToEntity(wall);
-    // if (type == TYPE.GROWER)
-    //     wall = Object.assign(wall, fg.Interactive, fg.Grower);
-    // if (wall.type == TYPE.PLATFORM)
-    //     wall = Object.assign(wall, fg.Interactive, fg.Platform, wall.moving ? fg.MovingPlatform : null);
-    // wall.slope = false;
-    // wall.backGround = true;
-    // wall.foreGround = false;
-    // wall.cacheWidth = wall.width;
-    // wall.cacheHeight = wall.height;
-    // if (type == TYPE.BOUNCER) {
-    //     wall = Object.assign(wall, fg.Bouncer);
-    // }
-    // wall.drawTile = function (c, ctx) {
-    //     c.width = this.width * 4;
-    //     c.height = this.height * (this.type == TYPE.PLATFORM ? 1 : 4);
-    //     for (var i = 0; i < (this.type == TYPE.PLATFORM ? 2 : 4); i++) {
-
-    //         var startX = (i == 1 || i == 3 ? this.width : 0);
-    //         var startY = (i == 2 || i == 3 ? this.width : 0);
-    //         var widthMultiplyer = (i == 1 || i == 3 ? 3 : 1);
-    //         var heightMultiplyer = (i == 2 || i == 3 ? 3 : 1);
-
-    //         ctx.beginPath();
-    //         ctx.lineWidth = 1;
-    //         ctx.strokeStyle = this.color;
-    //         ctx.rect(startX + .5, startY + .5, (this.width * widthMultiplyer) - 1, (this.height * heightMultiplyer) - 1);
-    //         ctx.stroke();
-    //         ctx.beginPath();
-    //         ctx.strokeStyle = "grey";
-    //         ctx.rect(startX + 1.5, startY + 1.5, (this.width * widthMultiplyer) - 3, (this.height * heightMultiplyer) - 3);
-    //         ctx.stroke();
-    //         if (this.type == TYPE.TUNNEL)
-    //             ctx.fillStyle = 'rgba(0,0,0,.5)';
-    //         else
-    //             ctx.fillStyle = this.color;
-    //         ctx.fillRect(startX + 2, startY + 2, (this.width * widthMultiplyer) - 4, (this.height * heightMultiplyer) - 4);
-    //     }
-    //     return c;
-    // };
-    // if (type == TYPE.SWITCH)
-    //     wall = Object.assign(wall, fg.Interactive, fg.Switch, (wall.moveTarget || wall.growTarget) ? fg.ChangeTarget : null);
-    // if (type == TYPE.TUNNEL)
-    //     wall = Object.assign(wall, fg.Tunnel);
-    // fg.Game.currentLevel.applySettingsToEntity(wall);
     wall.draw = function (foreGround) {
         if(this.cacheX == -1)
         {
@@ -2310,7 +2294,7 @@ fg.Actor = function (id, type, x, y, cx, cy, index) {
     actor = Object.assign(actor, fg.Active);
     actor.init(id, type, x, y, cx, cy, index);
     actor.width = fg.System.defaultSide * .625; //* .625; // fg.System.defaultSide / 3;
-    actor.height = fg.System.defaultSide * .9375; //* .9375; //fg.System.defaultSide - 4;
+    actor.height = fg.System.defaultSide * .5; //* .9375; //fg.System.defaultSide - 4;
     actor.color = "red";
     actor.canJump = true;
     actor.active = false;
@@ -2320,7 +2304,7 @@ fg.Actor = function (id, type, x, y, cx, cy, index) {
     actor.glove = false;
     actor.wallJump = true;
     actor.cacheOffSetX = -3;
-    actor.cacheOffSetY = -17;
+    actor.cacheOffSetY = -24; // -17;
     actor.wallSlideSpeed = 0.082;
     actor.wallSliding = false;
     actor.segments = [];
@@ -2335,24 +2319,6 @@ fg.Actor = function (id, type, x, y, cx, cy, index) {
         return c;
     };
     actor.draw = function (foreGround) {
-        // var fr = this.facingRight ? 0 : 32;
-        // var frame;
-        // if (this.curAnimation) frame = this.curAnimation.update(actor.facingRight);
-            // var fr = this.facingRight ? 0 : 32;
-        // if (frame) {
-        //     this.cacheOffSetX = -3;
-        //     this.cacheOffSetY = -17;
-        //     this.cacheX = frame.x;
-        //     // this.cacheY = frame.y + fr;
-        //     this.cacheY = frame.y;
-        //     this.cacheWidth = frame.width;
-        //     this.cacheHeight = frame.height;
-        // } else {
-        //     this.cacheX = 0;
-        //     this.cacheY = 0;
-        //     this.cacheWidth = 16;
-        //     this.cacheHeight = 32;
-        // }
         this.updateAnimationCache();
         fg.protoEntity.draw.call(this, foreGround);
         return this;
@@ -2406,7 +2372,7 @@ fg.Actor = function (id, type, x, y, cx, cy, index) {
         if (fg.Input.actions["jump"]) {
             if (this.canJump) {
                 this.canJump = false;
-                fg.Game.currentLevel.maze = Maze(fg.Game.currentLevel.size);
+                fg.Game.currentLevel.maze = Maze(fg.Game.currentLevel.size, undefined, undefined, undefined, undefined, fg.Game.currentLevel.seed);
                 fg.Game.currentLevel.createEntities();
                 this.playAnimation("Jump");
             }
@@ -2441,7 +2407,13 @@ fg.Actor = function (id, type, x, y, cx, cy, index) {
             if((fg.Input.actions["up"] || fg.Input.actions["down"] || fg.Input.actions["left"] || fg.Input.actions["right"]) && !fg.Input.actions["jump"]) this.playAnimation("Run");
         }
             
+        let overlapRoom = fg.Game.testOverlap(fg.Game.currentLevel.mainRoom,this);
         
+        if(overlapRoom) {
+            if (fg.Camera.following) fg.Camera.following = null;
+            fg.Camera.moveTo({x:760,y:750})
+        } else fg.Camera.following = this;
+
         this.vectors = undefined;
         fg.Active.update.call(this);
         fg.protoEntity.update.call(this);
@@ -2482,6 +2454,7 @@ fg.Game =
         fontAnimation: { fadeIn: false, blinkText: 0 },
         totalSecrets: 0,
         debug: false,
+        drawLevel: true,
         loadLevel: function (name) {
             this.levels.push(fg.Level(name));
             return this.levels[this.levels.length - 1];
@@ -2518,20 +2491,36 @@ fg.Game =
             }
             this.run();
         },
+        mapPosition: [],
         drawMap: function () {
-            var scale = 4;
+            let scale = 2;
             fg.Render.offScreenRender().width = fg.System.searchDepth * scale * 2;
             fg.Render.offScreenRender().height = Math.round(fg.System.searchDepth * (fg.System.canvas.height / fg.System.canvas.width)) * scale * 2;
-            var ctx = fg.Render.offScreenRender().getContext('2d');
+            // var ctx = fg.Render.offScreenRender().getContext('2d');
 
-            for (var i = 0, entity; entity = this.currentEntities[i]; i++) {
+            let mapEntities = fg.Game.searchArea(fg.Camera.center.x, fg.Camera.center.y, 16, 9);
+
+            for (var i = 0, entity; entity = mapEntities[i]; i++) {                
                 var x = parseInt(entity.id.split('-')[1]) - Math.round(fg.Game.screenOffsetX / fg.System.defaultSide);
                 var y = parseInt(entity.id.split('-')[0]) - Math.round(fg.Game.screenOffsetY / fg.System.defaultSide);
+
+                // if (fg.Game.actors[0].column > entity.column + mapSize || fg.Game.actors[0].column < entity.column - mapSize) continue;
+                // if (fg.Game.actors[0].row > entity.row + mapSize || fg.Game.actors[0].row < entity.row - mapSize) continue;
+
+                // if (fg.Game.mapPosition[0] > entity.column + mapSize || fg.Game.mapPosition[0] < entity.column - mapSize) continue;
+                // if (fg.Game.mapPosition[1] > entity.row + mapSize || fg.Game.mapPosition[1] < entity.row - mapSize) continue;
+
+                //if (fg.Camera.column > entity.column + mapSize || fg.Camera.column < entity.column - mapSize) continue;
+                //if (fg.Camera.row > entity.row + mapSize || fg.Camera.row < entity.row - mapSize) continue;
+
                 if (entity.type == TYPE.WALL || entity.type == TYPE.PLATFORM)
-                    ctx.fillStyle = "black";
+                    ctx.fillStyle = "rgba(255,0,0,0.5)";
                 else
-                    ctx.fillStyle = "red"
-                ctx.fillRect((10 * scale) + (x * scale), (5 * scale) + (y * scale), scale, entity.type == TYPE.PLATFORM ? (scale / 2) : scale);
+                    ctx.fillStyle = "rgba(0,0,0,0.5)";
+
+                if (entity.column == fg.Game.actors[0].column && entity.row == fg.Game.actors[0].row) ctx.fillStyle = "rgba(120,120,255,0.8)";
+                // ctx.fillRect((10 * scale) + (x * scale), (5 * scale) + (y * scale), scale, entity.type == TYPE.PLATFORM ? (scale / 2) : scale);
+                ctx.fillRect((130 * scale) + (x * scale), (70 * scale) + (y * scale), scale, entity.type == TYPE.PLATFORM ? (scale / 2) : scale);
             }
         },
         run: function () {
@@ -2620,18 +2609,23 @@ fg.Game =
                 this.clearScreen();
                 if (this.screenShot) this.screenShot = null;
                 this.foreGroundEntities = [];
-                this.searchArea(((fg.System.canvas.width / 2) + fg.Game.screenOffsetX),
-                    ((fg.System.canvas.height / 2) + fg.Game.screenOffsetY),
-                    fg.System.searchDepth, Math.round(fg.System.searchDepth * (fg.System.canvas.height / fg.System.canvas.width)),
-                    this.updateEntity);
+                if (fg.Game.drawLevel) {
+                    this.searchArea(((fg.System.canvas.width / 2) + fg.Game.screenOffsetX),
+                        ((fg.System.canvas.height / 2) + fg.Game.screenOffsetY),
+                        fg.System.searchDepth, Math.round(fg.System.searchDepth * (fg.System.canvas.height / fg.System.canvas.width)),
+                        this.updateEntity);
+                }
                 for (var index = 0, entity; entity = this.actors[index]; index++)
                     this.updateEntity(entity);
-                for (var index = this.foreGroundEntities.length - 1, entity; entity = this.foreGroundEntities[index]; index--) {
-                    entity.update(true);
-                    entity.draw(true);
+                if (fg.Game.drawLevel) {
+                    for (var index = this.foreGroundEntities.length - 1, entity; entity = this.foreGroundEntities[index]; index--) {
+                        entity.update(true);
+                        entity.draw(true);
+                    }
                 }
                 fg.Camera.update();
                 this.saveScreenAnimation = 0;
+                this.drawMap();
             } else {
                 if (!this.screenShot) {
                     var img = new Image();
@@ -2676,6 +2670,8 @@ fg.Game =
             var endRowIndex = mainRow + depthY > fg.Game.currentLevel.entities.length ? fg.Game.currentLevel.entities.length : mainRow + depthY;
             var startColIndex = mainColumn - depthX < 0 ? 0 : mainColumn - depthX;
             var endColIndex = mainColumn + depthX > fg.Game.currentLevel.entities[0].length ? fg.Game.currentLevel.entities[0].length : mainColumn + depthX;
+
+            this.mapPosition = [mainColumn,mainRow];
 
             for (var i = (endRowIndex - 1); i >= startRowIndex; i--) {
                 for (var k = startColIndex, obj; k < endColIndex; k++) {

@@ -19,8 +19,8 @@ var rowSize = 4;
 var roomSize = 5;
 var count = 0;
 // var size = 47;//39
-var seed = Math.random();
-var seeded = new Math.seedrandom(seed);
+var seed;// = Math.random();
+var seeded;// = new Math.seedrandom(seed);
 var lastRnd;
 function main(){    
     count++;
@@ -54,7 +54,9 @@ function main(){
 
 // var maze = Maze();
 
-function Maze(size=47, width=47, height=47, complexity=.20, density=.20) {// complexity=.75, density=.75) {
+function Maze(size=47, width=47, height=47, complexity=.20, density=.20, seedNumber) {// complexity=.75, density=.75) {
+    seed = seedNumber ? seedNumber : Math.random();
+    seeded = new Math.seedrandom(seed);
     // Only odd shapes
     this.shape  = [parseInt(size / 2) * 2 + 1, parseInt(size / 2) * 2 + 1];
     // Adjust complexity and density relative to maze size
