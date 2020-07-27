@@ -3,7 +3,8 @@ var levelOne = {
         { "F": "dungeon_floor.png", width: 96, height: 80 },
         { "X": "dungeon_walls.png", width: 96, height: 96 },
         { "A": "knight.png", width: 144, height: 64 },
-        { "E": "enemies.png", width: 128, height: 96 }
+        { "E": "enemies.png", width: 128, height: 96 },
+        { "m": "mapframe.png", width: 34, height: 20 }
     ],
     animations: [{
         entity: "A", name: "Idle", frames: [

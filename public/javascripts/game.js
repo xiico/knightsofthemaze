@@ -192,6 +192,8 @@ fg.Camera = {
     position: null,
     dampRate: 0.85,
     dampThreshold: 2,//4.5,
+    mapFrame: null,
+    showFrame: true,
     init: function (position) {
         if(position) {
             fg.Game.screenOffsetX = position.x;
@@ -201,6 +203,15 @@ fg.Camera = {
             fg.Game.screenOffsetX = this.following.x;
             fg.Game.screenOffsetY = this.following.y;
         }
+        this.mapFrame = fg.Game.currentLevel.srcs.find(e => e['m'] != null);
+        this.scale =4;
+        this.scaleMini = 1;
+        this.mapPosition = { x: 123, y: 66 };
+        this.cellPosition = { x: 123, y: 66 };
+        this.searchDepth = { x: 16, y: 10 };
+        this.mapPositionMini = { x: 274, y: 148 };
+        this.cellPositionMini = { x: 280, y: 150 };
+        this.searchDepthMini = {x: 16, y: 9};
     },
     follow: function (obj) {
         this.following = obj;
@@ -237,6 +248,53 @@ fg.Camera = {
         this.top = fg.Game.screenOffsetY;
         this.right = fg.Game.screenOffsetX + fg.System.canvas.width;
         this.bottom = fg.Game.screenOffsetY + fg.System.canvas.height;
+        this.drawMap();
+    },
+    drawMap: function (mini = true) {
+        let scale = mini ? this.scaleMini : this.scale;
+        let mapPosition = mini ? this.mapPositionMini : this.mapPosition;
+        let cellPosition = mini ? this.cellPositionMini : this.cellPosition;
+        let searchDepth = mini ? this.searchDepthMini :  this.searchDepth;
+
+        if(!ctx) return;
+
+        let mapEntities = fg.Game.searchArea(fg.Camera.center.x, fg.Camera.center.y, searchDepth.x, searchDepth.y);
+        //let mapEntities = fg.Game.searchArea(fg.Game.actors[0].x, fg.Game.actors[0].y, searchDepth.x, searchDepth.y);
+
+        ctx.fillStyle = "rgba(0,0,0,0.5)";
+        ctx.fillRect((mapPosition.x * scale), (mapPosition.y * scale) - 1, (16 * scale * 2), (9 * scale * 2));
+
+        let x;
+        let y;
+
+        for (var i = 0, entity; entity = mapEntities[i]; i++) {                
+            x = parseInt(entity.id.split('-')[1]) - Math.round(fg.Game.screenOffsetX / fg.System.defaultSide);
+            y = parseInt(entity.id.split('-')[0]) - Math.floor(fg.Game.screenOffsetY / fg.System.defaultSide);
+
+            if ((entity.type == TYPE.WALL || entity.type == TYPE.PLATFORM || TYPE.FLOOR) && (entity.visited || this.allVisited)) {                    
+                ctx.fillStyle = entity.type == TYPE.WALL ? "rgba(255,0,0,0.5)" : entity.bossRoom ? "rgba(90,255,90,0.5)" : "rgba(90,90,255,0.5)" ;
+                ctx.fillRect((cellPosition.x * scale) + (x * scale), (cellPosition.y * scale) + (y * scale), scale, entity.type == TYPE.PLATFORM ? (scale / 2) : scale);
+            }
+
+            if (entity.column == fg.Game.actors[0].column && entity.row == fg.Game.actors[0].row) {
+                ctx.fillStyle = "rgba(120,120,255,0.8)";
+                ctx.fillRect((cellPosition.x * scale) + (x * scale), (cellPosition.y * scale) + (y * scale), scale, entity.type == TYPE.PLATFORM ? (scale / 2) : scale);
+            }
+        }
+        
+        if (this.showFrame) {
+            if (!fg.Render.cached['m']) {
+                let c = fg.Render.preRenderCanvas();
+                let ctx = c.getContext("2d");
+                c = fg.protoEntity.drawTile.call({ type: 'm' }, c, ctx);
+                if (c)
+                    fg.Render.draw(fg.Render.cache('m', c), 0, 0, this.mapFrame.width, this.mapFrame.height, (mapPosition.x * scale) + fg.Game.screenOffsetX - 1, (mapPosition.y * scale) + fg.Game.screenOffsetY - 1);
+            }
+            else {
+                fg.Render.draw(fg.Render.cached['m'], 0, 0, this.mapFrame.width, this.mapFrame.height, (mapPosition.x * scale) + fg.Game.screenOffsetX - 1, (mapPosition.y * scale) + fg.Game.screenOffsetY - 1);
+            }
+        }
+
     },
     get column() {
         return (this.left + (canvas.width / 2)) / fg.Game.defaultSide;
@@ -380,7 +438,9 @@ fg.protoLevel = {
             y: size - (roomSize * defaultSide),
             width: roomSize * defaultSide * 2,
             height: roomSize * defaultSide * 2
-        }
+        }        
+        fg.Camera.follow(fg.Game.actors[0]);
+        fg.Camera.init();
     },
     init: function (name) {
         this.name = name;
@@ -500,7 +560,7 @@ fg.protoEntity = {
     },
     drawTile: function (c, ctx) {
         ctx.fillStyle = 'rgba(0,0,0,.75)';
-        var src = fg.Game.currentLevel.srcs.find(e => e[this.type] != null);
+        let src = fg.Game.currentLevel.srcs.find(e => e[this.type] != null);
         if (src) {
             var img = fg.$new("img");
             img.addEventListener('load', function() {
@@ -609,6 +669,7 @@ fg.Active =
         update: function () {
             // this.addGravity();
             this.entitiesToTest = fg.Game.searchArea(this.x + (this.width / 2), this.y + (this.height / 2), this.searchDepth, this.searchDepth);
+            fg.Game.searchArea(this.x + (this.width / 2), this.y + (this.height / 2), 4, 4, undefined,undefined,undefined,true);
             this.lastPosition = { x: this.x, y: this.y, grounded: this.grounded, speedX: this.speedX, speedY: this.speedY };
             // this.speedX = this.getSpeedX();
             // this.speedY = this.getSpeedY();
@@ -1095,6 +1156,7 @@ fg.Wall = function (id, type, x, y, cx, cy, index) {
         if (this.animationName) this.playAnimation(this.animationName);
         fg.protoEntity.update.call(this);
     }
+    wall.visited = false;
     return wall;
 }
 
@@ -2231,6 +2293,7 @@ fg.Floor = function (id, type, x, y, cx, cy, index) {
     floor.collidable = false;
     floor.cacheX = -1;
     floor.cacheY = -1;
+    floor.visited = false;
     floor.draw = function (foreGround) {
         if(this.cacheX == -1)
         {
@@ -2273,6 +2336,7 @@ fg.Floor = function (id, type, x, y, cx, cy, index) {
                    col >= parseInt(size) - parseInt(roomSize) && col < parseInt(size) + parseInt(roomSize) ){
                     this.cacheX = 80;
                     this.cacheY = 32;
+                    this.bossRoom = true;
                 }
             }
         }
@@ -2468,8 +2532,6 @@ fg.Game =
                 fg.Game.actors[0] = fg.Entity("A-A", TYPE.ACTOR, fg.System.defaultSide * 2, fg.System.defaultSide * 2, 0, 0, 0);//17,12|181,54|6,167|17,11|437,61|99,47|98,8|244,51|61,57
             }
             this.loadState();
-            fg.Camera.follow(fg.Game.actors[0]);
-            fg.Camera.init();
             this.currentLevel = this.loadLevel("levelOne");
             fg.Input.initKeyboard();
             fg.Input.bind(fg.Input.KEY.SPACE, "jump");
@@ -2492,37 +2554,6 @@ fg.Game =
             this.run();
         },
         mapPosition: [],
-        drawMap: function () {
-            let scale = 2;
-            fg.Render.offScreenRender().width = fg.System.searchDepth * scale * 2;
-            fg.Render.offScreenRender().height = Math.round(fg.System.searchDepth * (fg.System.canvas.height / fg.System.canvas.width)) * scale * 2;
-            // var ctx = fg.Render.offScreenRender().getContext('2d');
-
-            let mapEntities = fg.Game.searchArea(fg.Camera.center.x, fg.Camera.center.y, 16, 9);
-
-            for (var i = 0, entity; entity = mapEntities[i]; i++) {                
-                var x = parseInt(entity.id.split('-')[1]) - Math.round(fg.Game.screenOffsetX / fg.System.defaultSide);
-                var y = parseInt(entity.id.split('-')[0]) - Math.round(fg.Game.screenOffsetY / fg.System.defaultSide);
-
-                // if (fg.Game.actors[0].column > entity.column + mapSize || fg.Game.actors[0].column < entity.column - mapSize) continue;
-                // if (fg.Game.actors[0].row > entity.row + mapSize || fg.Game.actors[0].row < entity.row - mapSize) continue;
-
-                // if (fg.Game.mapPosition[0] > entity.column + mapSize || fg.Game.mapPosition[0] < entity.column - mapSize) continue;
-                // if (fg.Game.mapPosition[1] > entity.row + mapSize || fg.Game.mapPosition[1] < entity.row - mapSize) continue;
-
-                //if (fg.Camera.column > entity.column + mapSize || fg.Camera.column < entity.column - mapSize) continue;
-                //if (fg.Camera.row > entity.row + mapSize || fg.Camera.row < entity.row - mapSize) continue;
-
-                if (entity.type == TYPE.WALL || entity.type == TYPE.PLATFORM)
-                    ctx.fillStyle = "rgba(255,0,0,0.5)";
-                else
-                    ctx.fillStyle = "rgba(0,0,0,0.5)";
-
-                if (entity.column == fg.Game.actors[0].column && entity.row == fg.Game.actors[0].row) ctx.fillStyle = "rgba(120,120,255,0.8)";
-                // ctx.fillRect((10 * scale) + (x * scale), (5 * scale) + (y * scale), scale, entity.type == TYPE.PLATFORM ? (scale / 2) : scale);
-                ctx.fillRect((130 * scale) + (x * scale), (70 * scale) + (y * scale), scale, entity.type == TYPE.PLATFORM ? (scale / 2) : scale);
-            }
-        },
         run: function () {
             if (fg.Game.currentLevel.loaded) {
                 if (!fg.Game.started) {
@@ -2625,7 +2656,6 @@ fg.Game =
                 }
                 fg.Camera.update();
                 this.saveScreenAnimation = 0;
-                this.drawMap();
             } else {
                 if (!this.screenShot) {
                     var img = new Image();
@@ -2662,7 +2692,7 @@ fg.Game =
             obj.draw();
             if (obj.foreGround) fg.Game.foreGroundEntities.push(obj);
         },
-        searchArea: function (startX, startY, depthX, depthY, loopCallBack, endLoopCallBack, caller) {
+        searchArea: function (startX, startY, depthX, depthY, loopCallBack, endLoopCallBack, caller, markVisited) {
             this.currentEntities = [];
             var mainColumn = Math.round(startX / fg.System.defaultSide);
             var mainRow = Math.round(startY / fg.System.defaultSide);
@@ -2681,6 +2711,7 @@ fg.Game =
                     if (loopCallBack)
                         (!caller ? loopCallBack : loopCallBack.bind(caller))(obj);
                     this.currentEntities.push(obj);
+                    if(markVisited && obj.visited != undefined) obj.visited = true;
                     if (obj.target && obj.target.segments)
                         for (var index = 0, entity; entity = obj.target.segments[index]; index++)
                             this.currentEntities.push(entity);
