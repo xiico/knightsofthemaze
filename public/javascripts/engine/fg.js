@@ -107,6 +107,7 @@ import {Render} from './render.js';
 import {Active} from './active.js';
 import {Switch} from './switch.js';
 import {Game} from './game.js';
+import {UI} from './ui.js'
 
 let fg = window.fg;
 
@@ -198,6 +199,7 @@ fg.Render = Render;
 fg.Active = Active;
 fg.Switch = Switch;
 fg.Game = Game;
+fg.UI = UI;
 
 fg.Entity = function (id, type, x, y, cx, cy, index) {
     switch (type) {

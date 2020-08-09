@@ -21,6 +21,7 @@ let Game =
     totalSecrets: 0,
     debug: false,
     drawLevel: true,
+    showUI: false,
     loadLevel: function (name) {
         this.levels.push(fg.Level(name));
         return this.levels[this.levels.length - 1];
