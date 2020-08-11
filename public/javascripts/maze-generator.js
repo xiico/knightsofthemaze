@@ -65,11 +65,11 @@ function Maze(size=47, width=47, height=47, complexity=.20, density=.20, seedNum
 
     // Build actual maze
     Z = matrix(shape)
-
+    let room;
     // Make aisles
-    if(!useMaze2) buildIsles(this.density, this.shape, this.complexity, size, width, height);
+    if(!useMaze2) room = buildIsles(this.density, this.shape, this.complexity, size, width, height);
 
-    return Z;
+    return {maze:Z,bossRoom:room};
 }
 
 function buildIsles(density, shape, complexity, size, width, height) {
@@ -105,7 +105,13 @@ function buildIsles(density, shape, complexity, size, width, height) {
         }
     }
 
-    createRoom(Z, parseInt(size / 2) - parseInt(roomSize / 2) , parseInt(size / 2) - parseInt(roomSize / 2) , roomSize, roomSize);
+    // createRoom(Z, parseInt(size / 2) - parseInt(roomSize / 2) , parseInt(size / 2) - parseInt(roomSize / 2) , roomSize, roomSize);
+    let px = rand(10,width-10);
+    let py = rand(10,height-10);
+    px += (px % 2 == 0 ? 1 : 0);
+    py += (py % 2 == 0 ? 1 : 0);
+    createRoom(Z, px , py , roomSize, roomSize);
+    return {x:px,y:py,size:roomSize};
 }
 
 function matrix(shape) {

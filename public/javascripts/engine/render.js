@@ -18,9 +18,9 @@ let Render = {
         this.cached[type].getContext('2d').drawImage(data, x, y);
     },
     preRenderCanvas: function () { return fg.$new("canvas"); },
-    draw: function (data, cacheX, cacheY, width, height, mapX, mapY) {
+    draw: function (data, cacheX, cacheY, width, height, mapX, mapY, scale = 1) {
         fg.System.context.drawImage(data, cacheX, cacheY, width, height,
-            Math.floor(mapX - fg.Game.screenOffsetX), Math.floor(mapY - fg.Game.screenOffsetY), width, height);
+            Math.floor(mapX - fg.Game.screenOffsetX), Math.floor(mapY - fg.Game.screenOffsetY), width * scale, height * scale);
     },
     drawImage: function (data, x, y) {
         fg.System.context.drawImage(data, x, y);

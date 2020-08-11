@@ -39,6 +39,7 @@ let Game =
         fg.Input.bind(fg.Input.KEY.ENTER, "enter");
         fg.Input.bind(fg.Input.KEY.UP_ARROW, "up");
         fg.Input.bind(fg.Input.KEY.DOWN_ARROW, "down");
+        fg.Input.bind(fg.Input.KEY.M, "map");
         if (fg.System.platform.mobile) {
             fg.Input.bindTouch(fg.$("#btnMoveLeft"), "left");
             fg.Input.bindTouch(fg.$("#btnMoveRight"), "right");
@@ -321,7 +322,7 @@ let Game =
             tracks[0].play();
         }*/
     },
-    drawFont: function (text, color, x, y) {
+    drawFont: function (text, color, x, y, font = "10px Arial") {
         if (fg.Game.fontAnimation.fadeIn)
             fg.Game.fontAnimation.blinkText += 1;
         else
@@ -331,7 +332,7 @@ let Game =
 
         if (fg.Game.fontAnimation.blinkText <= 0) fg.Game.fontAnimation.fadeIn = true;
 
-        fg.System.context.font = "10px Arial";
+        fg.System.context.font = font;
         fg.System.context.fillStyle = "rgba(255,255,255," + fg.Game.fontAnimation.blinkText / 100 + ")";
         fg.System.context.fillText(text, x, y);
     },

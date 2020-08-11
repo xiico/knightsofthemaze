@@ -22,7 +22,7 @@ let Camera = {
             fg.Game.screenOffsetY = this.following.y;
         }
         this.mapFrame = fg.Game.currentLevel.srcs.find(e => e['m'] != null);
-        this.scale =4;
+        this.scale = 2;
         this.scaleMini = 1;
         this.mapPosition = { x: 123, y: 66 };
         this.cellPosition = { x: 123, y: 66 };
@@ -93,20 +93,20 @@ let Camera = {
 
         fg.Render.draw(fg.Game.currentLevel.map, Math.round((fg.Game.actors[0].x - 320) / 16), Math.round((fg.Game.actors[0].y - 180) / 16),
             this.mapFrame.width - 2, this.mapFrame.height - 2,
-            Math.round(this.mapPositionMini.x + fg.Game.screenOffsetX),
-            Math.round(this.mapPositionMini.y + fg.Game.screenOffsetY));
+            Math.round(mapPosition.x + fg.Game.screenOffsetX),
+            Math.round(mapPosition.y + fg.Game.screenOffsetY));
 
         fg.Render.draw(fg.Game.currentLevel.mapCover, Math.round((fg.Game.actors[0].x - 320) / 16), Math.round((fg.Game.actors[0].y - 180) / 16),
             this.mapFrame.width - 2, this.mapFrame.height - 2,
-            Math.round(this.mapPositionMini.x + fg.Game.screenOffsetX),
-            Math.round(this.mapPositionMini.y + fg.Game.screenOffsetY));            
+            Math.round(mapPosition.x + fg.Game.screenOffsetX),
+            Math.round(mapPosition.y + fg.Game.screenOffsetY));            
 
         // if (entity.column == fg.Game.actors[0].column && entity.row == fg.Game.actors[0].row) {
         //     mapCtx.fillStyle = "rgba(120,120,255,0.8)";
         //     ma
         ctx.fillStyle = "#fff";
         // ctx.createRadialGradient(75, 50, 5, 90, 60, 100)
-        ctx.fillRect(this.mapPositionMini.x + 20, this.mapPositionMini.y + 11, scale, scale);
+        ctx.fillRect(mapPosition.x + 20, mapPosition.y + 11, scale, scale);
 
         if (this.showFrame) {
             if (!fg.Render.cached['m']) {

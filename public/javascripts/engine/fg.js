@@ -121,6 +121,7 @@ fg.System =
     init: function () {
         this.canvas = fg.$("canvas")[0];
         this.context = this.canvas.getContext("2d");
+        this.context.imageSmoothingEnabled = false;
         this.platform.iPhone = /iPhone/i.test(navigator.userAgent);
         this.platform.iPad = /iPad/i.test(navigator.userAgent);
         this.platform.android = /android/i.test(navigator.userAgent);

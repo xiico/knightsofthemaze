@@ -89,12 +89,13 @@ let UI = {
                 }
                 if (!ctrl.highlighted || !this.active) continue;
                 ctrl.highlighted = false;
-                if (fg.Input.actions["right"]) {
+                if (fg.Input.actions["right"] || fg.Input.actions["down"]) {
                     if (this.controls[i + 1])
                         this.controls[i + 1].highlighted = true;
                     else
                         this.controls[0].highlighted = true;
                     delete fg.Input.actions["right"];
+                    delete fg.Input.actions["down"];
                     this.setHighlightedControl(this.controls[i + 1] || this.controls[0]);
                 } else {
                     if (this.controls[i - 1])
@@ -102,6 +103,7 @@ let UI = {
                     else
                         this.controls[this.controls.length - 1].highlighted = true;
                     delete fg.Input.actions["left"];
+                    delete fg.Input.actions["up"];
                     this.setHighlightedControl(this.controls[i - 1] || this.controls[this.controls.length - 1]);
                 }
                 break;
@@ -255,7 +257,7 @@ let UI = {
             this.close();
         }
         if (this.mainForm.active) {
-            if (fg.Input.actions["right"] || fg.Input.actions["left"]) this.mainForm.changeHighlighted();
+            if (fg.Input.actions["right"] || fg.Input.actions["left"] || fg.Input.actions["up"] || fg.Input.actions["down"]) this.mainForm.changeHighlighted();
             if (fg.Input.actions["enter"] || fg.Input.actions["jump"]) {
                 if ((this.activeForm().getHighlightedControl() || { click: function () { } }).click()) this.close();
             }

@@ -114,12 +114,17 @@ let Actor = function (id, type, x, y, cx, cy, index) {
         {
             if((fg.Input.actions["up"] || fg.Input.actions["down"] || fg.Input.actions["left"] || fg.Input.actions["right"]) && !fg.Input.actions["jump"]) this.playAnimation("Run");
         }
-            
-        let overlapRoom = fg.Game.testOverlap(fg.Game.currentLevel.mainRoom,this);
+        let bossRoom = {
+            x: fg.Game.currentLevel.maze.bossRoom.x * fg.System.defaultSide * 2, 
+            y: fg.Game.currentLevel.maze.bossRoom.y * fg.System.defaultSide * 2,
+            width: fg.Game.currentLevel.maze.bossRoom.size * fg.System.defaultSide * 2,
+            height: fg.Game.currentLevel.maze.bossRoom.size * fg.System.defaultSide * 2
+        };
+        let overlapRoom = fg.Game.testOverlap(bossRoom,this);
         
         if(overlapRoom) {
             if (fg.Camera.following) fg.Camera.following = null;
-            fg.Camera.moveTo({x:760,y:750})
+            fg.Camera.moveTo({x:bossRoom.x + fg.Game.currentLevel.maze.bossRoom.size * fg.System.defaultSide,y:bossRoom.y + fg.Game.currentLevel.maze.bossRoom.size * fg.System.defaultSide})
         } else fg.Camera.following = this;
 
         this.vectors = undefined;

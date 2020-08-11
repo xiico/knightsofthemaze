@@ -21,10 +21,12 @@ let Active =
     addedSpeedX: 0,
     backGround: true,
     life: 100,
+    searchDepthX: 4,
+    searchDepthY: 3,
     update: function () {
         // this.addGravity();
         this.entitiesToTest = fg.Game.searchArea(this.x + (this.width / 2), this.y + (this.height / 2), this.searchDepth, this.searchDepth);
-        fg.Game.searchArea(this.x + (this.width / 2), this.y + (this.height / 2), 3, 3, undefined, undefined, undefined, true);
+        fg.Game.searchArea(this.x + (this.width / 2), this.y + (this.height / 2), this.searchDepthX, this.searchDepthY, undefined, undefined, undefined, true);
         this.lastPosition = { x: this.x, y: this.y, grounded: this.grounded, speedX: this.speedX, speedY: this.speedY };
         // this.speedX = this.getSpeedX();
         // this.speedY = this.getSpeedY();

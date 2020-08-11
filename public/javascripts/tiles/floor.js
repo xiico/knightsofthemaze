@@ -43,11 +43,12 @@ let Floor = function (id, type, x, y, cx, cy, index) {
                 this.cacheWidth = 16;
                 this.cacheHeight = 16;
 
-                var row = parseInt(this.id.split('-')[0]);
-                var col = parseInt(this.id.split('-')[1]);
-                let size = fg.Game.currentLevel.size;
-                if(row >= parseInt(size) - parseInt(roomSize) && row < parseInt(size) + parseInt(roomSize) &&
-                   col >= parseInt(size) - parseInt(roomSize) && col < parseInt(size) + parseInt(roomSize) ){
+                let row = parseInt(this.id.split('-')[0]);
+                let col = parseInt(this.id.split('-')[1]);
+                let room = fg.Game.currentLevel.maze.bossRoom;
+                
+                if(row >= room.y * 2 && row < (room.y * 2) + (room.size * 2) &&
+                    col >= (room.x * 2) && col < (room.x * 2) + (room.size * 2)) {
                     this.cacheX = 80;
                     this.cacheY = 32;
                     this.bossRoom = true;

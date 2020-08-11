@@ -17,12 +17,12 @@ fg.Camera.init = function (position) {
         fg.Game.screenOffsetY = this.following.y;
     }
     this.mapFrame = fg.Game.currentLevel.srcs.find(e => e['m'] != null);
-    this.scale = 4;
+    this.scale = 1.5;
     this.scaleMini = 1;
-    this.mapPosition = { x: 123, y: 66 };
+    this.mapPosition = { x: 86, y: 16, width: 94, height: 94 };
     this.cellPosition = { x: 123, y: 66 };
     this.searchDepth = { x: 16, y: 10 };
-    this.mapPositionMini = { x: 274, y: 148 };
+    this.mapPositionMini = { x: 274, y: 148, width: this.mapFrame.width, height: this.mapFrame.height };
     this.cellPositionMini = { x: 0, y: 0 };
     this.searchDepthMini = { x: 16, y: 9 };
 };
@@ -55,7 +55,8 @@ fg.Camera.update = function () {
     this.top = fg.Game.screenOffsetY;
     this.right = fg.Game.screenOffsetX + fg.System.canvas.width;
     this.bottom = fg.Game.screenOffsetY + fg.System.canvas.height;
-    this.drawMap();
+    if (fg.Input.actions["map"]) this.drawMap(false);
+    else this.drawMap();
 };
 fg.Camera.renderMap = function (mini = true) {
     let scale = mini ? this.scaleMini : this.scale;
@@ -80,24 +81,35 @@ fg.Camera.drawMap = function (mini = true) {
     let scale = mini ? this.scaleMini : this.scale;
     let mapPosition = mini ? this.mapPositionMini : this.mapPosition;
 
-    fg.Render.draw(fg.Game.currentLevel.map, Math.round((fg.Game.actors[0].x - 320) / 16), Math.round((fg.Game.actors[0].y - 180) / 16),
-        this.mapFrame.width - 2, this.mapFrame.height - 2,
-        Math.round(this.mapPositionMini.x + fg.Game.screenOffsetX),
-        Math.round(this.mapPositionMini.y + fg.Game.screenOffsetY));
+    fg.Render.draw(fg.Game.currentLevel.map, 
+        mini ? Math.round((fg.Game.actors[0].x - 320) / 16) : 0, 
+        mini ? Math.round((fg.Game.actors[0].y - 180) / 16) : 0,
+        (mapPosition.width) - (mini ? 2 : 0), 
+        (mapPosition.height) - (mini ? 2 : 0),
+        Math.round(mapPosition.x + fg.Game.screenOffsetX),
+        Math.round(mapPosition.y + fg.Game.screenOffsetY),scale);
 
-    fg.Render.draw(fg.Game.currentLevel.mapCover, Math.round((fg.Game.actors[0].x - 320) / 16), Math.round((fg.Game.actors[0].y - 180) / 16),
-        this.mapFrame.width - 2, this.mapFrame.height - 2,
-        Math.round(this.mapPositionMini.x + fg.Game.screenOffsetX),
-        Math.round(this.mapPositionMini.y + fg.Game.screenOffsetY));
+    fg.Render.draw(fg.Game.currentLevel.mapCover, 
+        mini ? Math.round((fg.Game.actors[0].x - 320) / 16) : 0, 
+        mini ? Math.round((fg.Game.actors[0].y - 180) / 16) : 0,
+        (mapPosition.width) - (mini ? 2 : 0), 
+        (mapPosition.height) - (mini ? 2 : 0),
+        Math.round(mapPosition.x + fg.Game.screenOffsetX),
+        Math.round(mapPosition.y + fg.Game.screenOffsetY), scale);
 
-    // if (entity.column == fg.Game.actors[0].column && entity.row == fg.Game.actors[0].row) {
-    //     mapCtx.fillStyle = "rgba(120,120,255,0.8)";
-    //     ma
     ctx.fillStyle = "#fff";
-    // ctx.createRadialGradient(75, 50, 5, 90, 60, 100)
-    ctx.fillRect(this.mapPositionMini.x + 20, this.mapPositionMini.y + 11, scale, scale);
+    if (mini) ctx.fillRect(mapPosition.x + 20, mapPosition.y + 11, scale, scale);
+    else {
+        if (fg.Game.fontAnimation.fadeIn) fg.Game.fontAnimation.blinkText += 1;
+        else fg.Game.fontAnimation.blinkText -= 1;
+        if (fg.Game.fontAnimation.blinkText >= 50) fg.Game.fontAnimation.fadeIn = false;
+        if (fg.Game.fontAnimation.blinkText <= 0) fg.Game.fontAnimation.fadeIn = true;
 
-    if (this.showFrame) {
+        fg.System.context.fillStyle = "rgba(255,255,255," + fg.Game.fontAnimation.blinkText / 50 + ")";
+        ctx.fillRect((fg.Game.actors[0].x / 16 * scale) + mapPosition.x, (fg.Game.actors[0].y / 16 * scale) + mapPosition.y, scale, scale);
+    }
+    
+    if (mini) {
         if (!fg.Render.cached['m']) {
             let c = fg.Render.preRenderCanvas();
             let ctx = c.getContext("2d");
@@ -135,7 +147,7 @@ fg.protoLevel.loadSettings = function () {
 fg.protoLevel.getRowsFromMaze = function() {
     var rows = [];
     if (!this.maze) this.maze = Maze(fg.Game.currentLevel.size, undefined, undefined, undefined, undefined, this.seed);
-    for (let line of this.maze) {
+    for (let line of this.maze.maze) {
         rows[rows.length] = "";
         for (let cell of line) {
             if(cell) rows[rows.length - 1] += "XX";
@@ -184,12 +196,12 @@ fg.protoLevel.loadLevelCompleted = function () {
     this.width = this.entities[0].length * fg.System.defaultSide;
     let size = fg.Game.currentLevel.size * fg.System.defaultSide
     let defaultSide = fg.System.defaultSide
-    this.mainRoom = {
-        x: size - (roomSize * defaultSide),
-        y: size - (roomSize * defaultSide),
-        width: roomSize * defaultSide * 2,
-        height: roomSize * defaultSide * 2
-    }        
+    // this.mainRoom = {
+    //     x: size - (roomSize * defaultSide),
+    //     y: size - (roomSize * defaultSide),
+    //     width: roomSize * defaultSide * 2,
+    //     height: roomSize * defaultSide * 2
+    // }        
     fg.Camera.follow(fg.Game.actors[0]);
     fg.Camera.init();
     this.map = fg.Render.preRenderCanvas();
@@ -300,7 +312,7 @@ fg.Game.saveState = function () {
 fg.Game.update = function () {
     if ((fg.Input.actions["esc"] && fg.Input.actions["esc"] != this.lastPauseState) && !this.saving) this.paused = !this.paused;
     this.lastPauseState = fg.Input.actions["esc"];
-    if (!this.paused) {
+    if (!this.paused && !fg.Game.showUI) {
         this.clearScreen();
         if (this.screenShot) this.screenShot = null;
         this.foreGroundEntities = [];
@@ -320,6 +332,7 @@ fg.Game.update = function () {
         }
         fg.Camera.update();
         this.saveScreenAnimation = 0;
+        fg.Timer.update();
     } else {
         if (!this.screenShot) {
             var img = new Image();
@@ -329,13 +342,12 @@ fg.Game.update = function () {
         fg.Render.drawImage(this.screenShot, 0, 0);
         if (!this.showUI) {
             fg.System.context.fillStyle = "black";
-            this.drawFont("PAUSED", "", (fg.System.canvas.width / 2) - 12, 180);
+            this.drawFont("PAUSED", "", (fg.System.canvas.width / 2) - 12, 120);
         } else {
             fg.UI.update();
             fg.UI.draw();
         }
     }
-    fg.Timer.update();
 };
 fg.Game.showTitle = function () {
     var ctx = fg.System.context;
