@@ -126,24 +126,6 @@ fg.protoLevel.init = function (name) {
     this.name = name;
     this.load('levels/');
 }
-fg.protoLevel.loadSettings = function () {
-    if (window[this.name].levelSwiches)
-        this.levelSwiches = window[this.name].levelSwiches;
-    if (window[this.name].movingPlatforms)
-        this.movingPlatforms = window[this.name].movingPlatforms;
-    if (window[this.name].customProperties)
-        this.customProperties = window[this.name].customProperties;
-    if (window[this.name].warpDecks)
-        this.warpDecks = window[this.name].warpDecks;
-    if (window[this.name].srcs)
-        this.srcs = window[this.name].srcs;
-    if (window[this.name].animations)
-        this.animations = window[this.name].animations;
-    if (window[this.name].startPositions)
-        this.startPositions = window[this.name].startPositions;
-    if (window[this.name].size)
-        this.size = window[this.name].size;
-}
 fg.protoLevel.getRowsFromMaze = function() {
     var rows = [];
     if (!this.maze) this.maze = Maze(fg.Game.currentLevel.size, undefined, undefined, undefined, undefined, this.seed);

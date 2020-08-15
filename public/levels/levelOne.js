@@ -53,16 +53,18 @@ var levelOne = {
     },
     {
         entity: "F", name: "WLFB", frames: [
-            { x: 48, y: 00, width: 16, height: 16 },
-            { x: 64, y: 00, width: 16, height: 16 },
-            { x: 80, y: 00, width: 16, height: 16 }
+            { x: 48, y: 0, width: 16, height: 16 },
+            { x: 64, y: 0, width: 16, height: 16 },
+            { x: 80, y: 0, width: 16, height: 16 }
         ], interval: 100
     }],
     startPositions: [
-        { x: 02 * 16, y: 02 * 16 },
-        { x: 02 * 16, y: 90 * 16 },
+        { x: 2 * 16, y: 2 * 16 },
+        { x: 2 * 16, y: 90 * 16 },
         { x: 90 * 16, y: 90 * 16 },
-        { x: 90 * 16, y: 02 * 16 }
+        { x: 90 * 16, y: 2 * 16 }
     ],
     size: 47
 }
+
+export {levelOne};

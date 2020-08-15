@@ -1,3 +1,5 @@
 import {protoEntity} from '../engine/protoEntity.js';
-
-export {protoEntity as Bob};
+import {Roam} from '../behaviors/roam.js'
+let Bob = {};
+Object.assign(Bob,protoEntity,Roam);
+export {Bob};

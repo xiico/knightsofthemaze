@@ -70,12 +70,20 @@ let protoLevel = {
         }
         if (features) Object.assign(entity, features);
     },
+    loadSettings: function (level) {
+        for (const key in level) {
+            if (level.hasOwnProperty(key)) {
+                this[key] = level[key];
+            }
+        }
+    },
     load: function (path) {
-        fg.loadScript(path, this.name,
-            function (self) { self.loadSettings(); self.createEntities(); }, this);
+        let self = this;
+        import(`../../${path}${this.name}.js`).then(
+            function (result) { self.loadSettings(result[self.name]); self.createEntities(); }
+        );
     },
     loadLevelCompleted: function () {
-        window[this.name] = null;
         this.loaded = true;
     },
     init: function (name) {
