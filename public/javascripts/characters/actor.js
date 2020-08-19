@@ -80,7 +80,7 @@ let Actor = function (id, type, x, y, cx, cy, index) {
         if (fg.Input.actions["jump"]) {
             if (this.canJump) {
                 this.canJump = false;
-                fg.Game.currentLevel.maze = Maze(fg.Game.currentLevel.size, undefined, undefined, undefined, undefined, fg.Game.currentLevel.seed);
+                fg.Game.currentLevel.maze = fg.Maze(fg.Game.currentLevel.size, undefined, undefined, undefined, undefined, fg.Game.currentLevel.seed);
                 fg.Game.currentLevel.createEntities();
                 this.playAnimation("Jump");
             }

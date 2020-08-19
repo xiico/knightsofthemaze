@@ -4,9 +4,11 @@ import {Bob} from './enemies/bob.js';
 import {Actor} from './characters/actor.js';
 import {Wall} from './tiles/wall.js';
 import {Floor} from './tiles/floor.js';
+import {Maze} from './maze-generator.js';
 let TYPE = fg.TYPE;
 
 /************ updated ************/
+fg.Maze = Maze;
 fg.Camera.init = function (position) {
     if (position) {
         fg.Game.screenOffsetX = position.x;
@@ -97,6 +99,7 @@ fg.Camera.drawMap = function (mini = true) {
         Math.round(mapPosition.x + fg.Game.screenOffsetX),
         Math.round(mapPosition.y + fg.Game.screenOffsetY), scale);
 
+    let ctx = fg.System.context;
     ctx.fillStyle = "#fff";
     if (mini) ctx.fillRect(mapPosition.x + 20, mapPosition.y + 11, scale, scale);
     else {
@@ -315,6 +318,11 @@ fg.Game.update = function () {
         fg.Camera.update();
         this.saveScreenAnimation = 0;
         fg.Timer.update();
+        // fg.UI.fonts.small.draw('Xx!@#$%¨&*()_+,',20,20);
+        // fg.UI.fonts.small.draw('Xxpdfjlig',20,20);
+        // fg.UI.fonts.small.draw('https://sistema.bridgescultural.com.br/',20,20);
+        // fg.UI.fonts.tiny.draw('Xxpdfjlig',20 ,30 ,'left');
+        // fg.UI.fonts.tiny.draw('https://sistema.bridgescultural.com.br/',20 ,30 ,'left');
     } else {
         if (!this.screenShot) {
             var img = new Image();
@@ -429,6 +437,8 @@ fg.Level = function (name) {
 
 fg.UI.init = function () {
     fg.UI.initInfobox();
+    this.fonts['small'] = this.Font('assets/font_small.png',8,8);
+    this.fonts['tiny'] = this.Font('assets/font_tiny.png',5,9, null, 1);
     this.mainForm = Object.assign(Object.create(this.control), this.container, this.form, {
         id: "mainForm", active: true, animate: true, showBorder: true, visible: true, width: 100, height: 80, controls: [],
         x: (fg.System.canvas.width / 2) - (100 / 2),

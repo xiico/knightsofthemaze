@@ -22,6 +22,8 @@ var count = 0;
 var seed;// = Math.random();
 var seeded;// = new Math.seedrandom(seed);
 var lastRnd;
+var Z;
+
 function main(){    
     count++;
     if(count % 30 == 0) {
@@ -54,30 +56,30 @@ function main(){
 
 // var maze = Maze();
 
-function Maze(size=47, width=47, height=47, complexity=.20, density=.20, seedNumber) {// complexity=.75, density=.75) {
+const Maze = function(size=47, width=47, height=47, complexity=.20, density=.20, seedNumber) {// complexity=.75, density=.75) {
     seed = seedNumber ? seedNumber : Math.random();
     seeded = new Math.seedrandom(seed);
     // Only odd shapes
-    this.shape  = [parseInt(size / 2) * 2 + 1, parseInt(size / 2) * 2 + 1];
+    shape  = [parseInt(size / 2) * 2 + 1, parseInt(size / 2) * 2 + 1];
     // Adjust complexity and density relative to maze size
-    this.complexity = parseInt(complexity * (5 * (shape[0] + shape[1]))); // number of components
-    this.density    = parseInt(density * (parseInt(shape[0] / 2) * parseInt(shape[1] / 2))); // size of components
+    complexity = parseInt(complexity * (5 * (shape[0] + shape[1]))); // number of components
+    density    = parseInt(density * (parseInt(shape[0] / 2) * parseInt(shape[1] / 2))); // size of components
 
     // Build actual maze
     Z = matrix(shape)
     let room;
     // Make aisles
-    if(!useMaze2) room = buildIsles(this.density, this.shape, this.complexity, size, width, height);
+    if(!useMaze2) room = buildIsles(density, shape, complexity, size, width, height);
 
-    return {maze:Z,bossRoom:room};
+    return { maze: Z, bossRoom: room, seed: seed };
 }
 
 function buildIsles(density, shape, complexity, size, width, height) {
     for (let i of new Array(density)) {
-        var x = rand(1, parseInt(shape[1] / 2)) * 2, y = rand(1, parseInt(shape[0] / 2)) * 2; // pick a random position
+        let x = rand(1, parseInt(shape[1] / 2)) * 2, y = rand(1, parseInt(shape[0] / 2)) * 2; // pick a random position
         Z[y][x] = !!1;
         for (let j of new Array(complexity)) {
-            neighbours = [];
+            let neighbours = [];
             if (x > 1)
                 neighbours.push(new Array(y, x - 2));
             if (x < shape[1] - 2)
@@ -87,9 +89,9 @@ function buildIsles(density, shape, complexity, size, width, height) {
             if (y < shape[0] - 2)
                 neighbours.push(new Array(y + 2, x));
             if (neighbours.length) {
-                var index = rand(0, neighbours.length)
-                var ng = neighbours[index];
-                y_ = ng[0], x_ = ng[1];
+                let index = rand(0, neighbours.length)
+                let ng = neighbours[index];
+                let y_ = ng[0], x_ = ng[1];
                 // if (Z[y_][x_] == !!0) {
                     if (!Z[y_][x_]) {                    
                         Z[y_][x_] = true;
@@ -115,24 +117,24 @@ function buildIsles(density, shape, complexity, size, width, height) {
 }
 
 function matrix(shape) {
-    var Z = new Array(shape[0]);
-    for (var i = 0; i < Z.length; i++) {
-        Z[i] = new Array(shape[1]);
+    var mx = new Array(shape[0]);
+    for (var i = 0; i < mx.length; i++) {
+        mx[i] = new Array(shape[1]);
         // Fill borders
-        for (let k = 0; k < Z[i].length; k++) Z[i][k] = !k || !i || i == Z.length - 1 || k == Z[i].length - 1 ? true : false;
+        for (let k = 0; k < mx[i].length; k++) mx[i][k] = !k || !i || i == mx.length - 1 || k == mx[i].length - 1 ? true : false;
     }
-    return Z;
+    return mx;
 }
 
-function rand(min, max) {
+window.rand = function(min, max) {
     lastRnd = seeded();
-    result = parseInt(lastRnd * (max - min) + min);
+    let result = parseInt(lastRnd * (max - min) + min);
     return result <= max ? result : 0;;
 }
 
-function createRoom(Z = [], startx = 3, starty = 3, width = 3, height = 3){
+function createRoom(mx = [], startx = 3, starty = 3, width = 3, height = 3){
     for (let i = 0; i < Z.length; i++) {
-        const row = Z[i];
+        const row = mx[i];
         for (let k = 0; k < row.length; k++) {
             if (i >= starty && i < starty + height &&
                 k >= startx && k < startx + width) row[k] = false;
@@ -187,3 +189,4 @@ function buildIsles2(density, shape, complexity, width=47, height=47){
 // main();
 
 // setTimeout(main,3000)
+export {Maze};

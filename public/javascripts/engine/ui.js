@@ -1,10 +1,15 @@
+
+import {Font} from './font.js';
+
 let UI = {
     closeAll: false,
     initInfobox: function () {        
         this.infoBox.image = fg.$new('img');
         this.infoBox.canvas = fg.$new("canvas");
     },
+    Font: Font,
     mainForm: undefined,
+    fonts: {},    
     form: {
         type: "form",
         draw: function () {

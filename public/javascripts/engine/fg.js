@@ -329,15 +329,16 @@ fg.Timer = {
                 this.totalTime = 0;
             }
 
-            fg.System.context.font = "10px Arial";
-            fg.System.context.textAlign = "left";
-            if (fg.Game.paused) {
-                fg.System.context.textBaseline = "alphabetic";
-                fg.System.context.fillStyle = "black";
-                fg.System.context.fillRect(9, 1, 30, 10);
-            }
-            fg.System.context.fillStyle = "white";
-            fg.System.context.fillText(this.fps, 10, 10);
+            // fg.System.context.font = "10px Arial";
+            // fg.System.context.textAlign = "left";
+            // if (fg.Game.paused) {
+            //     fg.System.context.textBaseline = "alphabetic";
+            //     fg.System.context.fillStyle = "black";
+            //     fg.System.context.fillRect(9, 1, 30, 10);
+            // }
+            // fg.System.context.fillStyle = "white";
+            // fg.System.context.fillText(this.fps, 10, 10);
+            fg.UI.fonts.small.draw(this.fps,10,10);
         }
         this.deltaTime = this.timeInteval;//Math.floor((Math.max(this.currentTime - this.lastTime, 15) <= 30 ? this.currentTime - this.lastTime : 30) / 2) * 2;//16
         this.lastTime = this.currentTime;
