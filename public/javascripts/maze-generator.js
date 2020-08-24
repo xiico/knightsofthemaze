@@ -56,7 +56,7 @@ function main(){
 
 // var maze = Maze();
 
-const Maze = function(size=47, width=47, height=47, complexity=.20, density=.20, seedNumber) {// complexity=.75, density=.75) {
+const Maze = function(size=47, width=47, height=47, complexity=.2, density=.2, seedNumber) {// complexity=.2, density=.2) {
     seed = seedNumber ? seedNumber : Math.random();
     seeded = new Math.seedrandom(seed);
     // Only odd shapes

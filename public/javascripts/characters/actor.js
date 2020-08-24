@@ -121,6 +121,8 @@ let Actor = function (id, type, x, y, cx, cy, index) {
             height: fg.Game.currentLevel.maze.bossRoom.size * fg.System.defaultSide * 2
         };
         let overlapRoom = fg.Game.testOverlap(bossRoom,this);
+
+        
         
         if(overlapRoom) {
             if (fg.Camera.following) fg.Camera.following = null;

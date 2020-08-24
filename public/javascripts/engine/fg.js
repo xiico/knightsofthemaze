@@ -205,43 +205,13 @@ fg.UI = UI;
 fg.Entity = function (id, type, x, y, cx, cy, index) {
     switch (type) {
         case TYPE.WALL:
-        case TYPE.GROWER:
-        case TYPE.BOUNCER:
-        case TYPE.SWITCH:
-        case TYPE.PILLAR:
-        case TYPE.PLATFORM:
-        case TYPE.TUNNEL:
-        case TYPE.TURTLE:
-        case TYPE.CHECKPOINT:
             return fg.Wall(id, type, x, y, cx, cy, index);
-        case TYPE.CRATE:
-            return fg.Crate(id, type, x, y, cx, cy, index);
         case TYPE.ACTOR:
             return fg.Actor(id, type, x, y, cx, cy, index);
-        case TYPE.SLOPENE://"╗":            
-        case TYPE.SLOPESE://"╝":            
-        case TYPE.SLOPESW://"╚":            
-        case TYPE.SLOPENW://"╔":
-            return fg.Slope(id, type, x, y, cx, cy, index);
-        case TYPE.CIRCLE:
-        case TYPE.WALLJUMP:
-        case TYPE.SUPERJUMP:
-        case TYPE.LIGHT:
-        case TYPE.VELOCITY:
-        case TYPE.GLOVE:
-            return fg.Circle(id, type, x, y, cx, cy, index);
-        case TYPE.MARIO:
-            return fg.Mario(id, type, x, y, cx, cy, index);
-        case TYPE.SAVE:
-            return fg.Save(id, type, x, y, cx, cy, index);
-        case TYPE.SENTRY:
-            return fg.Sentry(id, type, x, y, cx, cy, index);
-        case TYPE.SECRET:
-            return fg.Secret(id, type, x, y, cx, cy, index);
-        case TYPE.WARPDECK:
-            return fg.WarpDeck(id, type, x, y, cx, cy, index);
         case TYPE.FLOOR:
             return fg.Floor(id, type, x, y, cx, cy, index);
+        case TYPE.BOB:
+            return fg.Bob(id, type, x, y, cx, cy, index);
         default:
             return Object.create(fg.protoEntity).init(id, type, x, y, cx, cy, index);
     }
@@ -337,8 +307,8 @@ fg.Timer = {
             //     fg.System.context.fillRect(9, 1, 30, 10);
             // }
             // fg.System.context.fillStyle = "white";
-            // fg.System.context.fillText(this.fps, 10, 10);
-            fg.UI.fonts.small.draw(this.fps,10,10);
+            fg.System.context.fillText(this.fps, 10, 10);
+            //fg.UI.fonts.small.draw(this.fps,10,10);
         }
         this.deltaTime = this.timeInteval;//Math.floor((Math.max(this.currentTime - this.lastTime, 15) <= 30 ? this.currentTime - this.lastTime : 30) / 2) * 2;//16
         this.lastTime = this.currentTime;
@@ -377,33 +347,8 @@ fg.Interactive = {
 
 var TYPE = {
     WALL: "X",
-    BOUNCER: "B",
-    GROWER: "G",
-    SWITCH: "S",
-    PILLAR: "P",
-    CRATE: "C",
-    BOX: "b",
-    PLATFORM: "p",
-    TUNNEL: "T",
-    CIRCLE: "c",
-    GLOVE: "g",
-    SLOPENE: "╗",
-    SLOPESE: "╝",
-    SLOPESW: "╚",
-    SLOPENW: "╔",
-    DARKNESS: "D",
-    LIGHT: "l",
-    TURTLE: "t",
-    WALLJUMP: "j",
-    MARIO: "M",
-    SAVE: "s",
-    CHECKPOINT: "h",
-    VELOCITY: "v",
-    SUPERJUMP: "j",
-    SENTRY: "e",
+    BOB: "b",
     ACTOR: "A",
-    SECRET: "i",
-    WARPDECK: "w",
     FLOOR: "F"
 }
 fg.TYPE = TYPE;

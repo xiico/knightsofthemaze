@@ -307,13 +307,39 @@ fg.Game.update = function () {
                 fg.System.searchDepth, Math.round(fg.System.searchDepth * (fg.System.canvas.height / fg.System.canvas.width)),
                 this.updateEntity);
         }
-        for (var index = 0, entity; entity = this.actors[index]; index++)
+        for (let index = 0, entity; entity = this.actors[index]; index++)
             this.updateEntity(entity);
+        if (fg.Game.currentLevel.enemies) {
+            for (let index = 0, enemy; enemy = fg.Game.currentLevel.enemies[index]; index++)
+                this.updateEntity(enemy);
+        }
         if (fg.Game.drawLevel) {
             for (var index = this.foreGroundEntities.length - 1, entity; entity = this.foreGroundEntities[index]; index--) {
                 entity.update(true);
                 entity.draw(true);
             }
+        }
+        
+
+        if(!fg.Game.currentLevel.enemies) {
+            fg.Game.currentLevel.enemies = [];
+
+            
+
+           // for (let index = 0; index < 25; index++) {
+                
+                
+            fg.Game.currentLevel.enemies.push(Bob(`e-${fg.Game.currentLevel.enemies.length}`,32,32 + (fg.Game.currentLevel.enemies.length * 2)));
+            fg.Game.currentLevel.enemies.push(Bob(`e-${fg.Game.currentLevel.enemies.length}`,32,32 + (fg.Game.currentLevel.enemies.length * 2)));
+
+            fg.Game.currentLevel.enemies.push(Bob(`e-${fg.Game.currentLevel.enemies.length}`,32,32 + (fg.Game.currentLevel.enemies.length * 2),"c"));
+            fg.Game.currentLevel.enemies.push(Bob(`e-${fg.Game.currentLevel.enemies.length}`,32,32 + (fg.Game.currentLevel.enemies.length * 2),"d"));
+            fg.Game.currentLevel.enemies.push(Bob(`e-${fg.Game.currentLevel.enemies.length}`,32,32 + (fg.Game.currentLevel.enemies.length * 2),"e"));
+            fg.Game.currentLevel.enemies.push(Bob(`e-${fg.Game.currentLevel.enemies.length}`,32,32 + (fg.Game.currentLevel.enemies.length * 2),"f"));
+            fg.Game.currentLevel.enemies.push(Bob(`e-${fg.Game.currentLevel.enemies.length}`,32,32 + (fg.Game.currentLevel.enemies.length * 2),"g"));
+            fg.Game.currentLevel.enemies.push(Bob(`e-${fg.Game.currentLevel.enemies.length}`,32,32 + (fg.Game.currentLevel.enemies.length * 2),"h"));
+            fg.Game.currentLevel.enemies.push(Bob(`e-${fg.Game.currentLevel.enemies.length}`,32,32 + (fg.Game.currentLevel.enemies.length * 2),"i"));
+            //}
         }
         fg.Camera.update();
         this.saveScreenAnimation = 0;
@@ -323,6 +349,9 @@ fg.Game.update = function () {
         // fg.UI.fonts.small.draw('https://sistema.bridgescultural.com.br/',20,20);
         // fg.UI.fonts.tiny.draw('Xxpdfjlig',20 ,30 ,'left');
         // fg.UI.fonts.tiny.draw('https://sistema.bridgescultural.com.br/',20 ,30 ,'left');
+        // this.drawFont("Press any key...", "", 120, 150);
+        // fg.UI.fonts.tiny.draw('Press any key...', 120 ,130 ,'left');
+        // fg.UI.fonts.small.draw('Press any key...',120,120);
     } else {
         if (!this.screenShot) {
             var img = new Image();

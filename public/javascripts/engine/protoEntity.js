@@ -59,7 +59,7 @@ let protoEntity = {
         return c;
     },
     playAnimation: function(name){
-        var animation = fg.Game.currentLevel.animations.find(a => a.name == name);
+        var animation = fg.Game.currentLevel.animations.find(a => !a.entity.indexOf(this.type) && a.name == name);
         if(animation && this.curAnimation == null || animation.name != this.curAnimation.name){
             this.curAnimation = new fg.Animation(animation);
             this.animationName = name;
@@ -72,8 +72,8 @@ let protoEntity = {
             this.cacheX = frame.x;
             // this.cacheY = frame.y + fr;
             this.cacheY = frame.y;
-            this.cacheWidth = frame.width;
-            this.cacheHeight = frame.height;
+            //this.cacheWidth = frame.width;
+            //this.cacheHeight = frame.height;
         }
     },
     update: function () { },

@@ -1,3 +1,5 @@
+import { Bob } from "../enemies/bob.js";
+
 let Floor = function (id, type, x, y, cx, cy, index) {
     var floor = Object.create(fg.protoEntity);
     floor.init(id, type, x, y, cx, cy, index);
@@ -55,8 +57,7 @@ let Floor = function (id, type, x, y, cx, cy, index) {
                 }
             }
         }
-        fg.protoEntity.draw.call(this);
-        
+        fg.protoEntity.draw.call(this);        
     }
     
     floor.update = function () {
