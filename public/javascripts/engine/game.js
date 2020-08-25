@@ -22,6 +22,7 @@ let Game =
     debug: false,
     drawLevel: true,
     showUI: false,
+    showHitBox: false,
     loadLevel: function (name) {
         this.levels.push(fg.Level(name));
         return this.levels[this.levels.length - 1];

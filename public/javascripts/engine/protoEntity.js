@@ -42,6 +42,10 @@ let protoEntity = {
             fg.System.context.fillText(this.id.split('-')[0], this.x - fg.Game.screenOffsetX + 7, this.y + 11 - fg.Game.screenOffsetY);
             fg.System.context.fillText(this.id.split('-')[1], this.x - fg.Game.screenOffsetX + 7, this.y + 18 - fg.Game.screenOffsetY);
         }
+        if(this.active !== undefined && fg.Game.showHitBox) {
+            fg.System.context.fillStyle = 'rgba(125,235,214,0.5)';
+            fg.System.context.fillRect(Math.floor(this.x - fg.Game.screenOffsetX), Math.floor(this.y - fg.Game.screenOffsetY), this.width, this.height);
+        }
     },
     drawTile: function (c, ctx) {
         ctx.fillStyle = 'rgba(0,0,0,.75)';
