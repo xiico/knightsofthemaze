@@ -26,7 +26,7 @@ let Roam = {
     maxSpeedX: 0.03,
     maxSpeedY: 0.03,
     actionsNames: ["left","right","up", "down"],
-    // enabled: false,
+    enabled: true,
     // init: function(minWait = 2000, maxWait = 5000, minDistance = 50, maxDistance = 150) {
     //     this.waitTimeRange.min = minWait;
     //     this.waitTimeRange.max = maxWait;
@@ -34,7 +34,7 @@ let Roam = {
     //     this.waitTimeRange.max = maxDistance;
     // },
     roam: function() {
-        // if (!this.enabled) return;
+        if (!this.enabled) return;
         this.speedX = 0;
         this.speedY = 0;
         if (!this.waitTime) this.waitTime = rand(this.waitTimeRange.min, this.waitTimeRange.max);

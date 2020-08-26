@@ -334,13 +334,13 @@ fg.Game.update = function () {
             this.actors[0].y));
             // fg.Game.currentLevel.enemies.push(Bob(`e-${fg.Game.currentLevel.enemies.length}`,32,32 + (fg.Game.currentLevel.enemies.length * 2)));
 
-            // fg.Game.currentLevel.enemies.push(Bob(`e-${fg.Game.currentLevel.enemies.length}`,32,32 + (fg.Game.currentLevel.enemies.length * 2),"c"));
-            // fg.Game.currentLevel.enemies.push(Bob(`e-${fg.Game.currentLevel.enemies.length}`,32,32 + (fg.Game.currentLevel.enemies.length * 2),"d"));
-            // fg.Game.currentLevel.enemies.push(Bob(`e-${fg.Game.currentLevel.enemies.length}`,32,32 + (fg.Game.currentLevel.enemies.length * 2),"e"));
-            // fg.Game.currentLevel.enemies.push(Bob(`e-${fg.Game.currentLevel.enemies.length}`,32,32 + (fg.Game.currentLevel.enemies.length * 2),"f"));
-            // fg.Game.currentLevel.enemies.push(Bob(`e-${fg.Game.currentLevel.enemies.length}`,32,32 + (fg.Game.currentLevel.enemies.length * 2),"g"));
-            // fg.Game.currentLevel.enemies.push(Bob(`e-${fg.Game.currentLevel.enemies.length}`,32,32 + (fg.Game.currentLevel.enemies.length * 2),"h"));
-            // fg.Game.currentLevel.enemies.push(Bob(`e-${fg.Game.currentLevel.enemies.length}`,32,32 + (fg.Game.currentLevel.enemies.length * 2),"i"));
+            fg.Game.currentLevel.enemies.push(Bob(`e-${fg.Game.currentLevel.enemies.length}`,32,32 + (fg.Game.currentLevel.enemies.length * 16),"c"));
+            fg.Game.currentLevel.enemies.push(Bob(`e-${fg.Game.currentLevel.enemies.length}`,32,32 + (fg.Game.currentLevel.enemies.length * 16),"d"));
+            fg.Game.currentLevel.enemies.push(Bob(`e-${fg.Game.currentLevel.enemies.length}`,32,32 + (fg.Game.currentLevel.enemies.length * 16),"e"));
+            fg.Game.currentLevel.enemies.push(Bob(`e-${fg.Game.currentLevel.enemies.length}`,32,32 + (fg.Game.currentLevel.enemies.length * 16),"f"));
+            fg.Game.currentLevel.enemies.push(Bob(`e-${fg.Game.currentLevel.enemies.length}`,32,32 + (fg.Game.currentLevel.enemies.length * 16),"g"));
+            fg.Game.currentLevel.enemies.push(Bob(`e-${fg.Game.currentLevel.enemies.length}`,32,32 + (fg.Game.currentLevel.enemies.length * 16),"h"));
+            fg.Game.currentLevel.enemies.push(Bob(`e-${fg.Game.currentLevel.enemies.length}`,32,32 + (fg.Game.currentLevel.enemies.length * 16),"i"));
             //}
         }
         fg.Camera.update();

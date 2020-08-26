@@ -79,7 +79,7 @@ var levelOne = {
             { x: 80, y: 0, width: 16, height: 32 },
             { x: 96, y: 0, width: 16, height: 32 },
             { x: 112, y: 0, width: 16, height: 32 }
-        ], interval: 100, faceOffSet: 32
+        ], interval: 100
     },
     {
         entity: "c", name: "Idle", frames: [
@@ -87,7 +87,7 @@ var levelOne = {
             { x: 16, y: 0, width: 16, height: 32 },
             { x: 32, y: 0, width: 16, height: 32 },
             { x: 48, y: 0, width: 16, height: 32 }
-        ], interval: 100
+        ], interval: 100, cacheOffSetX: -4, cacheOffSetY: -6, width: 9, height: 10 
     },
     {
         entity: "d", name: "Idle", frames: [
@@ -95,7 +95,7 @@ var levelOne = {
             { x: 16, y: 0, width: 16, height: 32 },
             { x: 32, y: 0, width: 16, height: 32 },
             { x: 48, y: 0, width: 16, height: 32 }
-        ], interval: 100
+        ], interval: 100, cacheOffSetX: -4, cacheOffSetY: -6, width: 9, height: 10
     },
     {
         entity: "e", name: "Idle", frames: [
@@ -103,7 +103,7 @@ var levelOne = {
             { x: 16, y: 0, width: 16, height: 32 },
             { x: 32, y: 0, width: 16, height: 32 },
             { x: 48, y: 0, width: 16, height: 32 }
-        ], interval: 100
+        ], interval: 100, cacheOffSetX: -4, cacheOffSetY: -6, width: 9, height: 10
     },
     {
         entity: "f", name: "Idle", frames: [
@@ -111,7 +111,7 @@ var levelOne = {
             { x: 16, y: 0, width: 16, height: 32 },
             { x: 32, y: 0, width: 16, height: 32 },
             { x: 48, y: 0, width: 16, height: 32 }
-        ], interval: 100
+        ], interval: 100, cacheOffSetY: -2, height: 14, cacheOffSetX: -2, width: 12
     },
     {
         entity: "g", name: "Idle", frames: [
@@ -119,7 +119,7 @@ var levelOne = {
             { x: 16, y: 0, width: 16, height: 32 },
             { x: 32, y: 0, width: 16, height: 32 },
             { x: 48, y: 0, width: 16, height: 32 }
-        ], interval: 100
+        ], interval: 100, cacheOffSetY: -2, height: 14, cacheOffSetX: -2, width: 12
     },
     {
         entity: "h", name: "Idle", frames: [
@@ -127,7 +127,7 @@ var levelOne = {
             { x: 16, y: 0, width: 16, height: 32 },
             { x: 32, y: 0, width: 16, height: 32 },
             { x: 48, y: 0, width: 16, height: 32 }
-        ], interval: 100
+        ], interval: 100, cacheOffSetX: -4, width: 8
     },
     {
         entity: "i", name: "Idle", frames: [
@@ -135,7 +135,7 @@ var levelOne = {
             { x: 16, y: 0, width: 16, height: 32 },
             { x: 32, y: 0, width: 16, height: 32 },
             { x: 48, y: 0, width: 16, height: 32 }
-        ], interval: 100
+        ], interval: 100, cacheOffSetX: -4, width: 8
     }],
     startPositions: [
         { x: 2 * 16, y: 2 * 16 },
