@@ -17,6 +17,7 @@ export default function (animation){//name, frames=[], total = 4, interval = 100
         self.curFrame = 0;
         self.totalFrameTime = 0;
     };
+    self.animation = animation;
     self.update = function (facingRight = true) {
         var frame = this.getFrame(facingRight);
         return frame;

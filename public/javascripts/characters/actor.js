@@ -2,8 +2,8 @@ let Actor = function (id, type, x, y, cx, cy, index) {
     var actor = Object.create(fg.protoEntity);
     actor = Object.assign(actor, fg.Active);
     actor.init(id, type, x, y, cx, cy, index);
-    actor.width = fg.System.defaultSide * .625; //* .625; // fg.System.defaultSide / 3;
-    actor.height = fg.System.defaultSide * .5; //* .9375; //fg.System.defaultSide - 4;
+    actor.width = 10;//fg.System.defaultSide * .625; //* .625; // fg.System.defaultSide / 3;
+    actor.height = 14;//fg.System.defaultSide * .5; //* .9375; //fg.System.defaultSide - 4;
     actor.color = "red";
     actor.canJump = true;
     actor.active = false;
@@ -13,7 +13,7 @@ let Actor = function (id, type, x, y, cx, cy, index) {
     actor.glove = false;
     actor.wallJump = true;
     actor.cacheOffSetX = -3;
-    actor.cacheOffSetY = -24; // -17;
+    actor.cacheOffSetY = -18; // -17;
     actor.wallSlideSpeed = 0.082;
     actor.wallSliding = false;
     actor.segments = [];
@@ -137,10 +137,10 @@ let Actor = function (id, type, x, y, cx, cy, index) {
         var frame;
         if (this.curAnimation) frame = this.curAnimation.update(this.facingRight);
         if (frame) {
-            if (this.cacheOffSetX || this.cacheOffSetY) {
-                this.cacheOffSetX = -3;
-                this.cacheOffSetY = -26; // -17;
-            }
+            // if (this.cacheOffSetX || this.cacheOffSetY) {
+            //     this.cacheOffSetX = -3;
+            //     this.cacheOffSetY = -26; // -17;
+            // }
             this.cacheX = frame.x;
             // this.cacheY = frame.y + fr;
             this.cacheY = frame.y;

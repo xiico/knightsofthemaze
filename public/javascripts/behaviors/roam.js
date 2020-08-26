@@ -26,6 +26,7 @@ let Roam = {
     maxSpeedX: 0.03,
     maxSpeedY: 0.03,
     actionsNames: ["left","right","up", "down"],
+    // enabled: false,
     // init: function(minWait = 2000, maxWait = 5000, minDistance = 50, maxDistance = 150) {
     //     this.waitTimeRange.min = minWait;
     //     this.waitTimeRange.max = maxWait;
@@ -33,12 +34,13 @@ let Roam = {
     //     this.waitTimeRange.max = maxDistance;
     // },
     roam: function() {
+        // if (!this.enabled) return;
         this.speedX = 0;
         this.speedY = 0;
         if (!this.waitTime) this.waitTime = rand(this.waitTimeRange.min, this.waitTimeRange.max);
         if (this.moveTime === null && this.curWaitTime < this.waitTime) {
             this.curWaitTime += fg.Timer.deltaTime;
-            this.text('waiting');
+            if (fg.Game.debug) this.text('waiting');
         } else this.move();
     },
     text: function(text) {
@@ -50,7 +52,7 @@ let Roam = {
         if (!this.moveTime) this.moveTime = rand(this.moveTimeRange.min, this.moveTimeRange.max);
         if (this.curMoveTime < this.moveTime) {
             this.curMoveTime += fg.Timer.deltaTime;
-            this.text('moving:' + this.actionsNames[this.curAction]);
+            if (fg.Game.debug) this.text('moving:' + this.actionsNames[this.curAction]);
             this.defineAction();
         } else {
             this.waitTime = null;

@@ -62,11 +62,19 @@ let protoEntity = {
         } else ctx.fillRect(0, 0, this.height, this.width);
         return c;
     },
-    playAnimation: function(name){
-        var animation = fg.Game.currentLevel.animations.find(a => !a.entity.indexOf(this.type) && a.name == name);
-        if(animation && this.curAnimation == null || animation.name != this.curAnimation.name){
-            this.curAnimation = new fg.Animation(animation);
-            this.animationName = name;
+    playAnimation: function (name) {
+        if (!this.curAnimation || this.curAnimation.name != name) {
+            var animation = fg.Game.currentLevel.animations.find(a => !a.entity.indexOf(this.type) && a.name == name);
+            if (animation && this.curAnimation == null || animation.name != this.curAnimation.name) {
+                
+                this.cacheOffSetX = animation.cacheOffSetX || this.cacheOffSetX;
+                this.cacheOffSetY = animation.cacheOffSetY || this.cacheOffSetY;
+                this.width = animation.width || this.width;
+                this.height = animation.height || this.height;
+                
+                this.curAnimation = new fg.Animation(animation);
+                this.animationName = name;
+            }
         }
     },
     updateAnimationCache: function() {

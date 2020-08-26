@@ -71,7 +71,7 @@ var levelOne = {
             { x: 16, y: 0, width: 16, height: 32 },
             { x: 32, y: 0, width: 16, height: 32 },
             { x: 48, y: 0, width: 16, height: 32 }
-        ], interval: 100
+        ], interval: 100, cacheOffSetX: -3, cacheOffSetY: -4, width: 10, height: 12 
     },
     {
         entity: "b", name: "Moving", frames: [
