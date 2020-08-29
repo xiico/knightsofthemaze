@@ -41,6 +41,7 @@ let Roam = {
         if (this.moveTime === null && this.curWaitTime < this.waitTime) {
             this.curWaitTime += fg.Timer.deltaTime;
             if (fg.Game.debug) this.text('waiting');
+            this.actions = {};
         } else this.move();
     },
     text: function(text) {
@@ -63,31 +64,42 @@ let Roam = {
         }
     },
     defineAction: function() {
-        if(this.curAction == null) {
-            this.actions = [];
-            this.curAction = rand(0,4);
-            this.actions[0] = null;
-            this.actions[1] = null;
-            this.actions[2] = null;
-            this.actions[3] = null;
-            this.actions[this.curAction] = true;
+        if (this.curAction == null) {
+            this.actions = {};
+            this.curAction = rand(0, 4);
+            switch (this.curAction) {
+                case 0:
+                    this.actions.left = true;
+                    this.facingRight = false;
+                    break;
+                case 1:
+                    this.actions.right = true;
+                    this.facingRight = true;
+                    break;
+                case 2:
+                    this.actions.up = true;
+                    break;
+                default:
+                    this.actions.down = true;
+                    break;
+            }
         }
-        if (this.actions[0]) { // "left"
+        if (this.actions["left"]) { // "left"
             this.active = true;
             // this.soilFriction = 1;
             this.facingRight = false;
             this.speedX = -this.getAccelX();
-        } else if (this.actions[1]) { //"right"
+        } else if (this.actions["right"]) { //"right"
             this.active = true;
             // this.soilFriction = 1;
             this.facingRight = true;
             this.speedX = this.getAccelX();
         } 
-        if (this.actions[2]) { // "up"
+        if (this.actions["up"]) { // "up"
             this.active = true;
             // this.soilFriction = 1;
             this.speedY = -this.getAccelY();
-        } else if (this.actions[3]) { // "down"
+        } else if (this.actions["down"]) { // "down"
             this.active = true;
             // this.soilFriction = 1;
             this.speedY = this.getAccelY();

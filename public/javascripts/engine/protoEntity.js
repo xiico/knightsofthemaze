@@ -47,7 +47,7 @@ let protoEntity = {
             fg.System.context.fillRect(Math.floor(this.x - fg.Game.screenOffsetX), Math.floor(this.y - fg.Game.screenOffsetY), this.width, this.height);
         }
     },
-    drawTile: function (c, ctx) {
+    drawTile: function (c, ctx, callBack) {
         ctx.fillStyle = 'rgba(0,0,0,.75)';
         let src = fg.Game.currentLevel.srcs.find(e => e[this.type] != null);
         if (src) {
@@ -57,6 +57,7 @@ let protoEntity = {
                 c.width = src.width;
                 c.height = src.height;
                 ctx.drawImage(img, 0, 0);
+                if (callBack) callBack(ctx);
               }, false);
               img.src = "/assets/" + src[this.type];
         } else ctx.fillRect(0, 0, this.height, this.width);
@@ -65,7 +66,7 @@ let protoEntity = {
     playAnimation: function (name) {
         if (!this.curAnimation || this.curAnimation.name != name) {
             var animation = fg.Game.currentLevel.animations.find(a => !a.entity.indexOf(this.type) && a.name == name);
-            if (animation && this.curAnimation == null || animation.name != this.curAnimation.name) {
+            if (animation && (this.curAnimation == null || animation.name != this.curAnimation.name)) {
                 
                 this.cacheOffSetX = animation.cacheOffSetX || this.cacheOffSetX;
                 this.cacheOffSetY = animation.cacheOffSetY || this.cacheOffSetY;
