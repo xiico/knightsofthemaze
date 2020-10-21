@@ -37,6 +37,7 @@ let Font = function(path, charWidth, charHeight, colour, spacing = 0) {
             return c;
         },
         draw: function (text, x, y, hAlign, vAlign) {
+            if(!this.bgImage) return;
             this._getCharCodes(String(text));
             var valgn = 0;
             var halgn = hAlign == 'left'? 1 : 0;;
