@@ -104,8 +104,8 @@ let Active =
             entitiesToResolve.pop();
             return;
         } else {
-            if (!obj.slope)
-                this.nonSlopeXcollision(obj);
+            if (!obj.slope) this.nonSlopeXcollision(obj);
+            if (this.collision) this.collision(obj);
         }
     },
     nonSlopeXcollision: function (obj) {
@@ -151,6 +151,7 @@ let Active =
                 this.slopeYcollision(obj);
 
             if (obj.oneWay) entitiesToResolve.pop();
+            if (this.collision) this.collision(obj);
         }
     },
     slopeYcollision: function (obj) {

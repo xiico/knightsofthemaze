@@ -1,4 +1,5 @@
 import {Active} from '../engine/active.js';
+import { fg } from '../engine/fg.js';
 
 let Roam = {
     waitTimeRange: {
@@ -26,13 +27,9 @@ let Roam = {
     maxSpeedX: 0.03,
     maxSpeedY: 0.03,
     actionsNames: ["left","right","up", "down"],
+    check: null,
     enabled: true,
-    // init: function(minWait = 2000, maxWait = 5000, minDistance = 50, maxDistance = 150) {
-    //     this.waitTimeRange.min = minWait;
-    //     this.waitTimeRange.max = maxWait;
-    //     this.distanceRange.min = minDistance;
-    //     this.waitTimeRange.max = maxDistance;
-    // },
+    curActionIndex: null,
     roam: function() {
         if (!this.enabled) return;
         this.speedX = 0;
@@ -53,7 +50,7 @@ let Roam = {
         if (!this.moveTime) this.moveTime = rand(this.moveTimeRange.min, this.moveTimeRange.max);
         if (this.curMoveTime < this.moveTime) {
             this.curMoveTime += fg.Timer.deltaTime;
-            if (fg.Game.debug) this.text('moving:' + this.actionsNames[this.curAction]);
+            if (fg.Game.debug) this.text('moving:' + this.curAction);
             this.defineAction();
         } else {
             this.waitTime = null;
@@ -66,20 +63,21 @@ let Roam = {
     defineAction: function() {
         if (this.curAction == null) {
             this.actions = {};
-            this.curAction = rand(0, 4);
-            switch (this.curAction) {
-                case 0:
+            if (!this.check) this.check = [...this.actionsNames];            
+            this.curActionIndex = rand(0, this.check.length);
+            switch (this.curAction = this.check[this.curActionIndex]) {
+                case "left":
                     this.actions.left = true;
                     this.facingRight = false;
                     break;
-                case 1:
+                case "right":
                     this.actions.right = true;
                     this.facingRight = true;
                     break;
-                case 2:
+                case "up":
                     this.actions.up = true;
                     break;
-                default:
+                case "down":
                     this.actions.down = true;
                     break;
             }
@@ -103,7 +101,19 @@ let Roam = {
             this.active = true;
             // this.soilFriction = 1;
             this.speedY = this.getAccelY();
-        } 
+        }
+        this.check = [...this.actionsNames];
+    },
+    collision: function(obj) {        
+        let self = this;
+        if (this.type == 'b' || true) {
+            //console.log(obj);
+            this.curMoveTime = this.moveTime;
+            this.check = this.actionsNames.filter(function(item) {
+                return item !== self.curAction
+            });
+        }
+        if(fg.Game.debug) console.log('obj: ', obj.id, 'direction: ', self.curAction);
     }
 }
 Object.assign(Roam, Active);
