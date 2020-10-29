@@ -8,7 +8,7 @@ let Roam = {
     },
     moveTimeRange: {
         min: 500,
-        max: 2000
+        max: 5000
     },
     distanceRange: {
         min: 50,

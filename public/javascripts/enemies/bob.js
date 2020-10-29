@@ -12,6 +12,10 @@ let Bob = function (id,x, y, type = 'b') {
     // bob.cacheOffSetX = type == 'b' ? -3 : 0;
     // bob.cacheOffSetY = type == 'b' ? -4 : 0;
     // bob.facingRight = true;
+    bob.cache = {};
+    bob.curCache = '';
+    bob.blinkTime = 5;
+    bob.curBlinkTime = 0;
     bob.drawTile = function (c, ctx) {
         fg.protoEntity.drawTile.call(this, c,ctx, function(ctx) {
             let frames = ctx.canvas.width / bob.cacheWidth;
@@ -44,11 +48,41 @@ let Bob = function (id,x, y, type = 'b') {
     };
     bob.update = function () {
         this.roam();
-        if(this.actions.left || this.actions.right || this.actions.up || this.actions.down )  this.playAnimation("Moving");
+        if(this.actions.left || this.actions.right || this.actions.up || this.actions.down || this.actions.chasing )  this.playAnimation("Moving");
         else this.playAnimation("Idle")
         fg.Active.update.call(this);
         fg.protoEntity.update.call(this);
     };
+    bob.draw = function () {
+        if (this.blink /*&& this.type == 'b'*/) {
+            if (!this.cache['default']) this.cache['default'] = fg.Render.cloneCanvas(fg.Render.cached[this.type]);
+            if (!this.cache[this.blink]) {
+                this.cache[this.blink] = fg.Render.cloneCanvas(this.cache['default']);
+                let ctx = this.cache[this.blink].getContext('2d');
+                ctx.fillStyle = this.blink;
+                ctx.globalCompositeOperation = "source-in";
+                ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                fg.Render.cached[this.type] = this.cache[this.blink];
+                fg.protoEntity.draw.call(this);
+                this.curCache = this.blink;
+            } else {
+                if (this.blink != this.curCache) fg.Render.cached[this.type] = this.cache[this.blink];
+                fg.protoEntity.draw.call(this);
+            }
+            if (this.curBlinkTime < this.blinkTime) {
+                this.curBlinkTime++;
+            } else if (this.curBlinkTime > 0) {
+                this.curBlinkTime = 0;
+                this.curCache = this.blink = null;
+            }
+        } else {            
+            if (!this.blink != this.curCache && this.curCache != 'default') {
+                this.curCache = 'default';
+                fg.Render.cached[this.type] = this.cache['default'];
+            }
+            fg.protoEntity.draw.call(this);
+        }
+    }
     return bob;
 }
 

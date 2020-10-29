@@ -112,6 +112,8 @@ fg.Camera.drawMap = function (mini = true) {
 
         fg.System.context.fillStyle = "rgba(255,255,255," + fg.Game.fontAnimation.blinkText / 50 + ")";
         ctx.fillRect((fg.Game.actors[0].x / 16 * scale) + mapPosition.x, (fg.Game.actors[0].y / 16 * scale) + mapPosition.y, scale, scale);
+        for (let index = 0, enemy; enemy = fg.Game.currentLevel.enemies[index]; index++)
+            ctx.fillRect((enemy.x / 16 * scale) + mapPosition.x, (enemy.y / 16 * scale) + mapPosition.y, scale, scale);
     }
     
     if (mini) {
