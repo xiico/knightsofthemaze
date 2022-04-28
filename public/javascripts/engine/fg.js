@@ -287,6 +287,7 @@ fg.Timer = {
     ticks: 0,
     fps: 0,
     timeInteval: 16,
+    pNow: 0,
     update: function () {
         var d = new Date();
         this.currentTime = d.getTime();
@@ -308,11 +309,13 @@ fg.Timer = {
             // }
             // fg.System.context.fillStyle = "white";
             fg.System.context.fillText(this.fps, 10, 10);
+            // fg.System.context.fillText(performance.now() - this.pNow, 10, 10);
             //fg.UI.fonts.small.draw(this.fps,10,10);
         }
         this.deltaTime = this.timeInteval;//Math.floor((Math.max(this.currentTime - this.lastTime, 15) <= 30 ? this.currentTime - this.lastTime : 30) / 2) * 2;//16
         this.lastTime = this.currentTime;
         this.ticks++;
+        this.pNow = performance.now();
     }
 }
 

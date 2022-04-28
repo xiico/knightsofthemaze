@@ -260,6 +260,7 @@ let UI = {
         for (var i = 0, ctrl; ctrl = visibleForms[i]; i++)  ctrl.active = i == visibleForms.length - 1;
         if (fg.Input.actions["esc"]) {
             this.close();
+            fg.Game.showUI = false;
         }
         if (this.mainForm.active) {
             if (fg.Input.actions["right"] || fg.Input.actions["left"] || fg.Input.actions["up"] || fg.Input.actions["down"]) this.mainForm.changeHighlighted();

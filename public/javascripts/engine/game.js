@@ -23,6 +23,7 @@ let Game =
     drawLevel: true,
     showUI: false,
     showHitBox: false,
+    previousTime: 0,
     loadLevel: function (name) {
         this.levels.push(fg.Level(name));
         return this.levels[this.levels.length - 1];
@@ -58,17 +59,20 @@ let Game =
     },
     mapPosition: [],
     run: function () {
-        if (fg.Game.currentLevel.loaded) {
-            if (!fg.Game.started) {
-                if (Object.keys(fg.Input.actions).length > 0) {
-                    fg.Input.actions = {};
-                    fg.Game.started = true;
-                }
-                fg.Game.showTitle();
-                fg.Timer.update();
-            } else fg.Game.update();
-        } else fg.Game.drawLoading(10, fg.System.canvas.height - 20, fg.System.canvas.width - 20, 20);
-
+        // Limit to 60 fps
+        if (performance.now() - fg.Game.previousTime >= 12) {
+            if (fg.Game.currentLevel.loaded) {
+                if (!fg.Game.started) {
+                    if (Object.keys(fg.Input.actions).length > 0) {
+                        fg.Input.actions = {};
+                        fg.Game.started = true;
+                    }
+                    fg.Game.showTitle();
+                    fg.Timer.update();
+                } else fg.Game.update();
+            } else fg.Game.drawLoading(10, fg.System.canvas.height - 20, fg.System.canvas.width - 20, 20);
+            fg.Game.previousTime = performance.now();
+        }
         requestAnimationFrame(fg.Game.run);
     },
     clearScreen: function () {
